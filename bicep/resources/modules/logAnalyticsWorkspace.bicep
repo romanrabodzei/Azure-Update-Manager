@@ -34,6 +34,7 @@ param automationAccountSku string = 'Basic'
 ])
 param automationAccountPublicNetworkAccess bool = false
 @secure()
+param initiativeName string
 param userAssignedIdentityId string
 
 /// tags
@@ -58,7 +59,7 @@ resource logAnalyticsWorkspace_resource 'Microsoft.OperationalInsights/workspace
 }
 
 resource automationAccount_resource 'Microsoft.Automation/automationAccounts@2023-11-01' = {
-  name: automationAccountName
+  name: toLower(automationAccountName)
   location: location == 'eastus' ? 'eastus2' : location == 'eastus2' ? 'eastus' : location
   tags: tags
   identity: {
@@ -81,6 +82,68 @@ resource logAnalyticsWorkspaceAutomation 'Microsoft.OperationalInsights/workspac
   tags: tags
   properties: {
     resourceId: automationAccount_resource.id
+  }
+}
+
+resource automationAccountRunbook_resource 'Microsoft.Automation/automationAccounts/runbooks@2023-11-01' = {
+  parent: automationAccount_resource
+  name: toLower('${automationAccountName}-runbook')
+  properties: {
+    description: 'Runbook to create policy remediation tasks'
+    runbookType: 'PowerShell'
+    logVerbose: true
+    logProgress: true
+    logActivityTrace: 0
+    publishContentLink: {
+      uri: 'https://raw.githubusercontent.com/romanrabodzei/azure-update-manager/develop/scripts/createpolicyremedationtasksrunbook.ps1'
+      contentHash: {
+        algorithm: 'SHA256'
+        value: '0x0'
+      }
+    }
+  }
+}
+
+var automationAccountVariables = [
+  { name: 'initiativeName', value: initiativeName, isEncrypted: false }
+  { name: 'umiId', value: userAssignedIdentityId, isEncrypted: true }
+]
+
+resource automationAccountVariable_resource 'Microsoft.Automation/automationAccounts/variables@2023-11-01' = [
+  for utomationAccountVariable in automationAccountVariables: {
+    parent: automationAccount_resource
+    name: utomationAccountVariable.name
+    properties: {
+      value: utomationAccountVariable.value
+      isEncrypted: utomationAccountVariable.isEncrypted
+    }
+  }
+]
+
+resource automationAccountSchedule_resource 'Microsoft.Automation/automationAccounts/schedules@2023-11-01' = {
+  parent: automationAccount_resource
+  name: toLower('${automationAccountName}-schedule')
+  properties: {
+    description: 'Schedule to run the policy remediation tasks'
+    startTime: '2023-11-01T00:00:00+00:00'
+    expiryTime: '2023-11-01T00:00:00+00:00'
+    interval: '1'
+    frequency: 'Day'
+    timeZone: 'UTC'
+  }
+}
+
+resource automationAccountJobSchedule_resource 'Microsoft.Automation/automationAccounts/jobSchedules@2023-11-01' = {
+  parent: automationAccount_resource
+  #disable-next-line BCP334
+  name: toLower('${automationAccountName}-jobSchedule')
+  properties: {
+    runbook: {
+      name: automationAccountRunbook_resource.name
+    }
+    schedule: {
+      name: automationAccountSchedule_resource.name
+    }
   }
 }
 
