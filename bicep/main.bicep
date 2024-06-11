@@ -70,7 +70,7 @@ resource resourceGroup_resource 'Microsoft.Resources/resourceGroups@2024-03-01' 
   tags: tags
 }
 
-module logAnalyticsWorkspace_module './modules/loganalyticsworkspace.bicep' = {
+module logAnalyticsWorkspace_module 'resourceModules/loganalyticsworkspace.bicep' = {
   scope: resourceGroup_resource
   name: toLower('logAnalyticsWorkspace-${deploymentDate}')
   params: {
@@ -87,7 +87,7 @@ module logAnalyticsWorkspace_module './modules/loganalyticsworkspace.bicep' = {
   dependsOn: [managedIdentity_module]
 }
 
-module managedIdentity_module './modules/managedIdentity.bicep' = {
+module managedIdentity_module 'resourceModules/managedIdentity.bicep' = {
   scope: resourceGroup_resource
   name: toLower('managedIdentity-${deploymentDate}')
   params: {
@@ -97,7 +97,7 @@ module managedIdentity_module './modules/managedIdentity.bicep' = {
   }
 }
 
-module roleAssignment_module './modules/roleAssignmentSubscriptionScope.bicep' = {
+module roleAssignment_module 'resourceModules/roleAssignmentSubscriptionScope.bicep' = {
   name: toLower('roleAssignment-${deploymentDate}')
   params: {
     roleDefinitionId: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
@@ -108,7 +108,7 @@ module roleAssignment_module './modules/roleAssignmentSubscriptionScope.bicep' =
   ]
 }
 
-module maintenanceConfiguration_module './modules/maintenanceConfigurations.bicep' = {
+module maintenanceConfiguration_module 'resourceModules/maintenanceConfigurations.bicep' = {
   scope: resourceGroup_resource
   name: toLower('maintenanceConfiguration-${deploymentDate}')
   params: {
@@ -121,7 +121,7 @@ module maintenanceConfiguration_module './modules/maintenanceConfigurations.bice
   }
 }
 
-module configurationAssignment_module './modules/configurationAssignments.bicep' = {
+module configurationAssignment_module 'resourceModules/configurationAssignments.bicep' = {
   name: toLower('configurationAssignment-${deploymentDate}')
   params: {
     maintenanceConfigName: maintenanceConfigName
@@ -139,7 +139,7 @@ module configurationAssignment_module './modules/configurationAssignments.bicep'
 /////////////////////////////////////////// Policies ///////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module policies_module '../policies/initiatives/uss-initiative-def-aum-01.bicep' = {
+module policies_module 'policies/initiatives/uss-initiative-def-aum-01.bicep' = {
   name: toLower('policies-${deploymentDate}')
   params: {
     deploymentEnvironment: deploymentEnvironment
