@@ -32,11 +32,24 @@ param automationAccountSku string = 'Basic'
   true
   false
 ])
-param automationAccountPublicNetworkAccess bool = false
+param automationAccountPublicNetworkAccess bool = true
 param automationAccountRunbooksLocationUri string
 
 param policyInitiativeName string
 param userAssignedIdentityName string
+
+/// variables
+param currentDate string = utcNow('yyyy-MM-dd')
+var currentDateParts = split(currentDate, '-')
+var year = int(currentDateParts[0])
+var month = int(currentDateParts[1])
+var day = int(currentDateParts[2]) + 1
+var nextDayAfterTheDeployment = '${year}-${padLeft(string(month), 2, '0')}-${padLeft(string(day), 2, '0')}'
+
+var automationAccountVariables = [
+  { name: 'initiativeName', value: toLower(policyInitiativeName), isEncrypted: false }
+  { name: 'umiId', value: userAssignedIdentity_resource.id, isEncrypted: true }
+]
 
 /// tags
 param tags object = {}
@@ -56,6 +69,15 @@ resource logAnalyticsWorkspace_resource 'Microsoft.OperationalInsights/workspace
     workspaceCapping: {
       dailyQuotaGb: logAnalyticsWorkspaceDailyQuotaGb
     }
+  }
+}
+
+resource logAnalyticsWorkspaceAutomationAccount_link 'Microsoft.OperationalInsights/workspaces/linkedServices@2020-08-01' = {
+  parent: logAnalyticsWorkspace_resource
+  name: toLower('Automation')
+  tags: tags
+  properties: {
+    resourceId: automationAccount_resource.id
   }
 }
 
@@ -79,84 +101,48 @@ resource automationAccount_resource 'Microsoft.Automation/automationAccounts@202
     }
     publicNetworkAccess: automationAccountPublicNetworkAccess
   }
-}
-
-resource logAnalyticsWorkspaceAutomation 'Microsoft.OperationalInsights/workspaces/linkedServices@2020-08-01' = {
-  parent: logAnalyticsWorkspace_resource
-  name: 'Automation'
-  tags: tags
-  properties: {
-    resourceId: automationAccount_resource.id
-  }
-}
-
-resource automationAccountRunbook_resource 'Microsoft.Automation/automationAccounts/runbooks@2023-11-01' = {
-  parent: automationAccount_resource
-  name: toLower('${automationAccountName}-runbook')
-  location: location
-  properties: {
-    description: 'Runbook to create policy remediation tasks'
-    runbookType: 'PowerShell'
-    logVerbose: true
-    logProgress: true
-    logActivityTrace: 0
-    publishContentLink: {
-      uri: '${automationAccountRunbooksLocationUri}/scripts/createpolicyremedationtasksrunbook.ps1'
-      contentHash: {
-        algorithm: 'SHA256'
-        value: '0x0'
+  resource runbook 'runbooks@2023-11-01' = {
+    name: 'policyRemedationTasksRunbook'
+    location: location
+    tags: tags
+    properties: {
+      description: 'Runbook to create policy remediation tasks'
+      runbookType: 'PowerShell'
+      publishContentLink: {
+        uri: '${automationAccountRunbooksLocationUri}/scripts/createpolicyremedationtasksrunbook.ps1'
+        version: '1.0.0'
       }
     }
   }
-}
-
-var automationAccountVariables = [
-  { name: 'initiativeName', value: policyInitiativeName, isEncrypted: false }
-  { name: 'umiId', value: userAssignedIdentity_resource.id, isEncrypted: true }
-]
-
-resource automationAccountVariable_resource 'Microsoft.Automation/automationAccounts/variables@2023-11-01' = [
-  for (object, i) in automationAccountVariables: {
-    parent: automationAccount_resource
-    name: automationAccountVariables[i].name
+  resource variable 'variables' = [
+    for (object, i) in automationAccountVariables: {
+      name: automationAccountVariables[i].name
+      properties: {
+        value: '"${automationAccountVariables[i].value}"'
+        isEncrypted: automationAccountVariables[i].isEncrypted
+      }
+    }
+  ]
+  resource schedule 'schedules' = {
+    name: 'dailySchedule'
     properties: {
-      value: automationAccountVariables[i].value
-      isEncrypted: automationAccountVariables[i].isEncrypted
+      description: 'Schedule to run the policy remediation tasks'
+      startTime: '${nextDayAfterTheDeployment}T00:00:00+00:00'
+      expiryTime: '9999-12-31T00:00:00+00:00'
+      interval: '1'
+      frequency: 'Day'
+      timeZone: 'UTC'
     }
   }
-]
-
-param currentDate string = utcNow('yyyy-MM-dd')
-param currentDateParts array = split(currentDate, '-')
-param year int = int(currentDateParts[0])
-param month int = int(currentDateParts[1])
-param day int = int(currentDateParts[2]) + 1
-
-param nextDayAfterTheDeployment string = '${year}-${padLeft(string(month), 2, '0')}-${padLeft(string(day), 2, '0')}'
-
-resource automationAccountSchedule_resource 'Microsoft.Automation/automationAccounts/schedules@2023-11-01' = {
-  parent: automationAccount_resource
-  name: toLower('${automationAccountName}-schedule')
-  properties: {
-    description: 'Schedule to run the policy remediation tasks'
-    startTime: '${nextDayAfterTheDeployment}T00:00:00+00:00'
-    expiryTime: '9999-12-31T00:00:00+00:00'
-    interval: '1'
-    frequency: 'Day'
-    timeZone: 'UTC'
-  }
-}
-
-resource automationAccountJobSchedule_resource 'Microsoft.Automation/automationAccounts/jobSchedules@2023-11-01' = {
-  parent: automationAccount_resource
-  #disable-next-line BCP334
-  name: toLower('${automationAccountName}-jobSchedule')
-  properties: {
-    runbook: {
-      name: automationAccountRunbook_resource.name
-    }
-    schedule: {
-      name: automationAccountSchedule_resource.name
+  resource jobSchedule 'jobSchedules' = {
+    name: subscription().subscriptionId
+    properties: {
+      runbook: {
+        name: runbook.name
+      }
+      schedule: {
+        name: schedule.name
+      }
     }
   }
 }

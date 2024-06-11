@@ -6,14 +6,14 @@
     The runbook will create policy remedation tasks for policies in Azure Update Manager initiatives.
 
 .NOTES
-    File Name  : createpolicyremedationtasksrunbook.ps1
+    File Name  : policyRemedationTasksRunbook.ps1
     Author     : Roman Rabodzei
     Version    : 1.0.240611
 #>
 
 #region variables
 $initiativeName = (Get-AutomationVariable -Name initiativeName)
-$umiId = (Get-AutomationVariable -Name createPolicyRemedationTasksRunbook-umiId)
+$umiId = (Get-AutomationVariable -Name umiId)
 #endregion
 
 #region RemediationTask function

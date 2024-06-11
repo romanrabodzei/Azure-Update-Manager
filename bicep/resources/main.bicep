@@ -19,7 +19,7 @@ targetScope = 'subscription'
 
 @description('Deployment location.')
 param deploymentLocation string = deployment().location
-param deploymentEnvironment string = 'Dev'
+param deploymentEnvironment string = 'prod'
 param deploymentDate string = utcNow('yyyyMMddHHmm')
 
 @description('Name of the resource group for the Azure Update Manager components.')
@@ -54,9 +54,8 @@ param maintenanceStartDay string = 'Thursday'
 param policyInitiativeName string = 'az-${deploymentEnvironment}-update-manager-initiative'
 
 /// tags
-param tagKey string = 'Environment'
-@allowed(['Dev', 'Prod'])
-param tagValue string = 'Dev'
+param tagKey string = 'environment'
+param tagValue string = 'prod'
 var tags = {
   '${tagKey}': tagValue
 }
