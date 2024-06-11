@@ -32,6 +32,7 @@ param logAnalyticsWorkspaceDailyQuotaGb int = -1
 
 @description('Name of the automation account.')
 param automationAccountName string = 'az-${deploymentEnvironment}-update-manager-aa'
+param automationAccountRunbooksLocationUri string = 'https://raw.githubusercontent.com/romanrabodzei/azure-update-manager/develop'
 
 @description('Name of the user-assigned managed identity.')
 param userAssignedIdentityName string = 'az-${deploymentEnvironment}-update-manager-mi'
@@ -49,6 +50,8 @@ var maintenanceStartTime = customStartDate == '' ? currentStartDate : '${customS
 
 @description('Custom start day for maintenance window. If not provided, Thursday is used.')
 param maintenanceStartDay string = 'Thursday'
+
+param policyInitiativeName string = 'az-${deploymentEnvironment}-update-manager-initiative'
 
 /// tags
 param tagKey string = 'Environment'
@@ -77,9 +80,12 @@ module logAnalyticsWorkspace_module './modules/loganalyticsworkspace.bicep' = {
     logAnalyticsWorkspaceRetentionInDays: logAnalyticsWorkspaceRetentionInDays
     logAnalyticsWorkspaceDailyQuotaGb: logAnalyticsWorkspaceDailyQuotaGb
     automationAccountName: automationAccountName
-    userAssignedIdentityId: managedIdentity_module.outputs.userAssignedIdentityId
+    automationAccountRunbooksLocationUri: automationAccountRunbooksLocationUri
+    policyInitiativeName: policyInitiativeName
+    userAssignedIdentityName: userAssignedIdentityName
     tags: tags
   }
+  dependsOn: [managedIdentity_module]
 }
 
 module managedIdentity_module './modules/managedIdentity.bicep' = {

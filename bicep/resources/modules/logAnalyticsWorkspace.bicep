@@ -33,9 +33,10 @@ param automationAccountSku string = 'Basic'
   false
 ])
 param automationAccountPublicNetworkAccess bool = false
-@secure()
-param initiativeName string
-param userAssignedIdentityId string
+param automationAccountRunbooksLocationUri string
+
+param policyInitiativeName string
+param userAssignedIdentityName string
 
 /// tags
 param tags object = {}
@@ -58,6 +59,10 @@ resource logAnalyticsWorkspace_resource 'Microsoft.OperationalInsights/workspace
   }
 }
 
+resource userAssignedIdentity_resource 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
+  name: userAssignedIdentityName
+}
+
 resource automationAccount_resource 'Microsoft.Automation/automationAccounts@2023-11-01' = {
   name: toLower(automationAccountName)
   location: location == 'eastus' ? 'eastus2' : location == 'eastus2' ? 'eastus' : location
@@ -65,7 +70,7 @@ resource automationAccount_resource 'Microsoft.Automation/automationAccounts@202
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {
-      '${userAssignedIdentityId}': {}
+      '${userAssignedIdentity_resource.id}': {}
     }
   }
   properties: {
@@ -95,7 +100,7 @@ resource automationAccountRunbook_resource 'Microsoft.Automation/automationAccou
     logProgress: true
     logActivityTrace: 0
     publishContentLink: {
-      uri: 'https://raw.githubusercontent.com/romanrabodzei/azure-update-manager/develop/scripts/createpolicyremedationtasksrunbook.ps1'
+      uri: '${automationAccountRunbooksLocationUri}/scripts/createpolicyremedationtasksrunbook.ps1'
       contentHash: {
         algorithm: 'SHA256'
         value: '0x0'
@@ -105,8 +110,8 @@ resource automationAccountRunbook_resource 'Microsoft.Automation/automationAccou
 }
 
 var automationAccountVariables = [
-  { name: 'initiativeName', value: initiativeName, isEncrypted: false }
-  { name: 'umiId', value: userAssignedIdentityId, isEncrypted: true }
+  { name: 'initiativeName', value: policyInitiativeName, isEncrypted: false }
+  { name: 'umiId', value: userAssignedIdentity_resource.id, isEncrypted: true }
 ]
 
 resource automationAccountVariable_resource 'Microsoft.Automation/automationAccounts/variables@2023-11-01' = [
