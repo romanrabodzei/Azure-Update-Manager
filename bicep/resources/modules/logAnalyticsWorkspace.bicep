@@ -93,6 +93,7 @@ resource logAnalyticsWorkspaceAutomation 'Microsoft.OperationalInsights/workspac
 resource automationAccountRunbook_resource 'Microsoft.Automation/automationAccounts/runbooks@2023-11-01' = {
   parent: automationAccount_resource
   name: toLower('${automationAccountName}-runbook')
+  location: location
   properties: {
     description: 'Runbook to create policy remediation tasks'
     runbookType: 'PowerShell'
@@ -115,23 +116,31 @@ var automationAccountVariables = [
 ]
 
 resource automationAccountVariable_resource 'Microsoft.Automation/automationAccounts/variables@2023-11-01' = [
-  for utomationAccountVariable in automationAccountVariables: {
+  for (object, i) in automationAccountVariables: {
     parent: automationAccount_resource
-    name: utomationAccountVariable.name
+    name: automationAccountVariables[i].name
     properties: {
-      value: utomationAccountVariable.value
-      isEncrypted: utomationAccountVariable.isEncrypted
+      value: automationAccountVariables[i].value
+      isEncrypted: automationAccountVariables[i].isEncrypted
     }
   }
 ]
+
+param currentDate string = utcNow('yyyy-MM-dd')
+param currentDateParts array = split(currentDate, '-')
+param year int = int(currentDateParts[0])
+param month int = int(currentDateParts[1])
+param day int = int(currentDateParts[2]) + 1
+
+param nextDayAfterTheDeployment string = '${year}-${padLeft(string(month), 2, '0')}-${padLeft(string(day), 2, '0')}'
 
 resource automationAccountSchedule_resource 'Microsoft.Automation/automationAccounts/schedules@2023-11-01' = {
   parent: automationAccount_resource
   name: toLower('${automationAccountName}-schedule')
   properties: {
     description: 'Schedule to run the policy remediation tasks'
-    startTime: '2023-11-01T00:00:00+00:00'
-    expiryTime: '2023-11-01T00:00:00+00:00'
+    startTime: '${nextDayAfterTheDeployment}T00:00:00+00:00'
+    expiryTime: '9999-12-31T00:00:00+00:00'
     interval: '1'
     frequency: 'Day'
     timeZone: 'UTC'
