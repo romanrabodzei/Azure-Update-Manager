@@ -135,4 +135,17 @@ module configurationAssignment_module './modules/configurationAssignments.bicep'
   ]
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////// Policies ///////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+module policies_module '../policies/initiatives/uss-initiative-def-aum-01.bicep' = {
+  name: toLower('policies-${deploymentDate}')
+  params: {
+    deploymentEnvironment: deploymentEnvironment
+    userAssignedIdentitiesId: managedIdentity_module.outputs.userAssignedIdentityId
+    maintenanceConfigurationResourceId: maintenanceConfiguration_module.outputs.maintenanceConfigurationId
+    tagKey: tagKey
+    tagValue: tagValue
+  }
+}

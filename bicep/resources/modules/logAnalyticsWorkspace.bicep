@@ -109,7 +109,7 @@ resource automationAccount_resource 'Microsoft.Automation/automationAccounts@202
       description: 'Runbook to create policy remediation tasks'
       runbookType: 'PowerShell'
       publishContentLink: {
-        uri: '${automationAccountRunbooksLocationUri}/scripts/createpolicyremedationtasksrunbook.ps1'
+        uri: '${automationAccountRunbooksLocationUri}/scripts/policyRemedationTasksRunbook.ps1'
         version: '1.0.0'
       }
     }
