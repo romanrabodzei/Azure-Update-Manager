@@ -108,6 +108,8 @@ resource automationAccount_resource 'Microsoft.Automation/automationAccounts@202
     properties: {
       description: 'Runbook to create policy remediation tasks'
       runbookType: 'PowerShell'
+      logProgress: true
+      logVerbose: true
       publishContentLink: {
         uri: '${automationAccountRunbooksLocationUri}/scripts/policyRemedationTasksRunbook.ps1'
         version: '1.0.0'
@@ -126,7 +128,7 @@ resource automationAccount_resource 'Microsoft.Automation/automationAccounts@202
   resource schedule 'schedules' = {
     name: 'dailySchedule'
     properties: {
-      description: 'Schedule to run the policy remediation tasks'
+      description: 'Schedule to run the policy remediation tasks daily.'
       startTime: '${nextDayAfterTheDeployment}T00:00:00+00:00'
       expiryTime: '9999-12-31T00:00:00+00:00'
       interval: '1'
