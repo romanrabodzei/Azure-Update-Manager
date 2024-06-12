@@ -32,7 +32,7 @@ param logAnalyticsWorkspaceDailyQuotaGb int = -1
 
 @description('Name of the automation account.')
 param automationAccountName string = 'az-${deploymentEnvironment}-update-manager-aa'
-param automationAccountRunbooksLocationUri string = 'https://raw.githubusercontent.com/romanrabodzei/azure-update-manager/develop'
+param automationAccountRunbooksLocationUri string = 'https://raw.githubusercontent.com/romanrabodzei/azure-update-manager/main'
 
 @description('Name of the user-assigned managed identity.')
 param userAssignedIdentityName string = 'az-${deploymentEnvironment}-update-manager-mi'
