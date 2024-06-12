@@ -17,9 +17,11 @@ targetScope = 'subscription'
 /////////////////////////////////////// Parameters and variables ///////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@description('Deployment location.')
+@description('The location where the resources will be deployed.')
 param deploymentLocation string = deployment().location
-param deploymentEnvironment string = 'poc'
+@description('The environment where the resources will be deployed.')
+param deploymentEnvironment string
+@description('The UTC date and time when the deployment is executed.')
 param deploymentDate string = utcNow('yyyyMMddHHmm')
 
 @description('Name of the resource group for the Azure Update Manager components.')
@@ -50,12 +52,12 @@ var maintenanceStartTime = customStartDate == '' ? currentStartDate : '${customS
 
 @description('Custom start day for maintenance window. If not provided, Thursday is used.')
 param maintenanceStartDay string = 'Thursday'
-
+@description('The name of the policy initiative.')
 param policyInitiativeName string = 'az-${deploymentEnvironment}-update-manager-initiative'
 
 /// tags
 param tagKey string = 'environment'
-param tagValue string = 'poc'
+param tagValue string = deploymentEnvironment
 var tags = {
   '${tagKey}': tagValue
 }
