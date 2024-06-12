@@ -19,7 +19,7 @@ targetScope = 'subscription'
 
 @description('Deployment location.')
 param deploymentLocation string = deployment().location
-param deploymentEnvironment string = 'prod'
+param deploymentEnvironment string = 'poc'
 param deploymentDate string = utcNow('yyyyMMddHHmm')
 
 @description('Name of the resource group for the Azure Update Manager components.')
@@ -55,7 +55,7 @@ param policyInitiativeName string = 'az-${deploymentEnvironment}-update-manager-
 
 /// tags
 param tagKey string = 'environment'
-param tagValue string = 'prod'
+param tagValue string = 'poc'
 var tags = {
   '${tagKey}': tagValue
 }
@@ -143,6 +143,7 @@ module policies_module 'policies/initiatives/uss-initiative-def-aum-01.bicep' = 
   name: toLower('policies-${deploymentDate}')
   params: {
     deploymentEnvironment: deploymentEnvironment
+    policyInitiativeName: policyInitiativeName
     userAssignedIdentitiesId: managedIdentity_module.outputs.userAssignedIdentityId
     maintenanceConfigurationResourceId: maintenanceConfiguration_module.outputs.maintenanceConfigurationId
     tagKey: tagKey

@@ -10,6 +10,7 @@
 targetScope = 'subscription'
 
 param deploymentEnvironment string
+param policyInitiativeName string
 param userAssignedIdentitiesId string
 param maintenanceConfigurationResourceId string
 
@@ -49,13 +50,13 @@ module aum_policy_periodic_check_updates_on_azure_vms '../definitions/policy-per
 
 /// initiative
 resource aum_initiative_def_aum_01 'Microsoft.Authorization/policySetDefinitions@2023-04-01' = {
-  name: toLower('${deploymentEnvironment}-aum-initiative-def-01')
+  name: toLower(policyInitiativeName)
   properties: {
     displayName: '${toUpper(deploymentEnvironment)}. Azure Update Management Initiative'
-    description: 'Policy initiative definition that contains policy definitions for Azure Update Management that are part of the USS'
+    description: 'Policy initiative definition that contains policy definitions for Azure Update Management'
     policyType: 'Custom'
     metadata: {
-      category: 'USS Update Management'
+      category: 'Azure Update Manager'
       version: '1.0.240611'
     }
     parameters: {
@@ -132,8 +133,8 @@ resource aum_initiative_asgn_01 'Microsoft.Authorization/policyAssignments@2024-
   }
   location: deployment().location
   properties: {
-    displayName: '${toUpper(deploymentEnvironment)}. Azure Update Management Initiative'
-    description: 'Azure Update Management Initiative'
+    displayName: '${toUpper(deploymentEnvironment)}. Azure Update Management Initiative Assignment'
+    description: 'Azure Update Management Initiative Assignment'
     enforcementMode: 'Default'
     policyDefinitionId: aum_initiative_def_aum_01.id
     notScopes: []

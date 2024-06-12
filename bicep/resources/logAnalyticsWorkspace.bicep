@@ -135,7 +135,7 @@ resource automationAccount_resource 'Microsoft.Automation/automationAccounts@202
     }
   }
   resource jobSchedule 'jobSchedules' = {
-    name: subscription().subscriptionId
+    name: guid(subscription().subscriptionId, runbook.name, schedule.name)
     properties: {
       runbook: {
         name: runbook.name
