@@ -17,9 +17,11 @@ targetScope = 'subscription'
 /////////////////////////////////////// Parameters and variables ///////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@description('Deployment location.')
+@description('The location where the resources will be deployed.')
 param deploymentLocation string = deployment().location
-param deploymentEnvironment string = 'poc'
+@description('The environment where the resources will be deployed.')
+param deploymentEnvironment string
+@description('The UTC date and time when the deployment is executed.')
 param deploymentDate string = utcNow('yyyyMMddHHmm')
 
 @description('Name of the resource group for the Azure Update Manager components.')
@@ -43,19 +45,35 @@ param maintenanceConfigName string = 'az-${deploymentEnvironment}-update-manager
 @description('Name of the maintenance configuration assignment.')
 param maintenanceConfigAssignmentName string = 'az-${deploymentEnvironment}-update-manager-mca'
 
-@description('Custom start date for maintenance window. If not provided, current date is used.')
+@description('Custom start date for maintenance window. If not provided, current start date will be used. Format: yyyy-MM-dd')
 param customStartDate string = ''
 param currentStartDate string = utcNow('yyyy-MM-dd 00:00')
-var maintenanceStartTime = customStartDate == '' ? currentStartDate : '${customStartDate} 00:00'
+
+@description('Due to limitations of the Bicep language, the error "StartDateTime should be after 15 minutes of creation" may occur. The following code is used to calculate the next day. If the date is 28, the next day will be 01 next month. February has only 28 days, and 28 was taken just because of it.')
+func calculateStartDate(currentStartDate string) object => {
+  day: int(take(skip(currentStartDate, 8), 2)) < 28 ? string(int(take(skip(currentStartDate, 8), 2)) + 1) : '01'
+  month: int(take(skip(currentStartDate, 8), 2)) < 28
+    ? int(take(skip(currentStartDate, 5), 2)) <= 12 ? take(skip(currentStartDate, 5), 2) : '01'
+    : int(take(skip(currentStartDate, 5), 2)) + 1 < 9
+        ? '0${string(int(take(skip(currentStartDate, 5), 2)) + 1)}'
+        : int(take(skip(currentStartDate, 5), 2)) + 1 > 12 ? '01' : string(int(take(skip(currentStartDate, 5), 2)) + 1)
+  year: int(take(skip(currentStartDate, 5), 2)) < 12
+    ? string(take(currentStartDate, 4))
+    : string(int(take(currentStartDate, 4)) + 1)
+}
+func newStartDate(currentStartDate string) string =>
+  '${calculateStartDate(currentStartDate).year}-${calculateStartDate(currentStartDate).month}-${calculateStartDate(currentStartDate).day} 00:00'
+
+var maintenanceStartTime = customStartDate == '' ? newStartDate(currentStartDate) : '${customStartDate} 00:00'
 
 @description('Custom start day for maintenance window. If not provided, Thursday is used.')
 param maintenanceStartDay string = 'Thursday'
-
+@description('The name of the policy initiative.')
 param policyInitiativeName string = 'az-${deploymentEnvironment}-update-manager-initiative'
 
 /// tags
 param tagKey string = 'environment'
-param tagValue string = 'poc'
+param tagValue string = deploymentEnvironment
 var tags = {
   '${tagKey}': tagValue
 }
@@ -68,6 +86,31 @@ resource resourceGroup_resource 'Microsoft.Resources/resourceGroups@2024-03-01' 
   name: toLower(azureUpdateManagerResourceGroupName)
   location: deploymentLocation
   tags: tags
+}
+
+module managedIdentity_module 'resources/managedIdentity.bicep' = {
+  scope: resourceGroup_resource
+  name: toLower('managedIdentity-${deploymentDate}')
+  params: {
+    location: deploymentLocation
+    userAssignedIdentityName: userAssignedIdentityName
+    tags: tags
+  }
+}
+
+var roleDefinition = 'b24988ac-6180-42a0-ab88-20f7382dd24c' // 'Contributor'
+resource roleDefinition_resource 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  name: roleDefinition
+  scope: subscription()
+}
+
+resource roleAssignment_resource 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(roleDefinition_resource.name)
+  scope: subscription()
+  properties: {
+    principalId: managedIdentity_module.outputs.userAssignedIdentityClientId
+    roleDefinitionId: roleDefinition_resource.id
+  }
 }
 
 module logAnalyticsWorkspace_module 'resources/loganalyticsworkspace.bicep' = {
@@ -87,35 +130,14 @@ module logAnalyticsWorkspace_module 'resources/loganalyticsworkspace.bicep' = {
   dependsOn: [managedIdentity_module]
 }
 
-module managedIdentity_module 'resources/managedIdentity.bicep' = {
-  scope: resourceGroup_resource
-  name: toLower('managedIdentity-${deploymentDate}')
-  params: {
-    location: deploymentLocation
-    userAssignedIdentityName: userAssignedIdentityName
-    tags: tags
-  }
-}
-
-module roleAssignment_module 'resources/roleAssignmentSubscriptionScope.bicep' = {
-  name: toLower('roleAssignment-${deploymentDate}')
-  params: {
-    roleDefinitionId: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
-    userAssignedIdentityClientId: managedIdentity_module.outputs.userAssignedIdentityClientId
-  }
-  dependsOn: [
-    managedIdentity_module
-  ]
-}
-
 module maintenanceConfiguration_module 'resources/maintenanceConfigurations.bicep' = {
   scope: resourceGroup_resource
   name: toLower('maintenanceConfiguration-${deploymentDate}')
   params: {
     maintenanceConfigName: maintenanceConfigName
     location: deploymentLocation
-    maintenanceStartTime: maintenanceStartTime
     maintenanceStartDay: maintenanceStartDay
+    maintenanceStartTime: maintenanceStartTime
     maintenanceReboot: 'IfRequired'
     tags: tags
   }
@@ -139,7 +161,7 @@ module configurationAssignment_module 'resources/configurationAssignments.bicep'
 /////////////////////////////////////////// Policies ///////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module policies_module 'policies/initiatives/uss-initiative-def-aum-01.bicep' = {
+module policies_module 'policies/initiatives/aum-initiative-def-aum-01.bicep' = {
   name: toLower('policies-${deploymentDate}')
   params: {
     deploymentEnvironment: deploymentEnvironment

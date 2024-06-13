@@ -14,8 +14,8 @@ param location string
 
 param maintenanceConfigName string
 
-param maintenanceStartTime string
 param maintenanceStartDay string
+param maintenanceStartTime string
 
 @allowed(['Custom', 'Public'])
 param maintenanceVisibility string = 'Custom'
