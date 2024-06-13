@@ -97,15 +97,19 @@ module managedIdentity_module 'resources/managedIdentity.bicep' = {
   }
 }
 
-module roleAssignment_module 'resources/roleAssignmentSubscriptionScope.bicep' = {
-  name: toLower('roleAssignment-${deploymentDate}')
-  params: {
-    roleDefinitionId: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
-    userAssignedIdentityClientId: managedIdentity_module.outputs.userAssignedIdentityClientId
+var roleDefinition = 'b24988ac-6180-42a0-ab88-20f7382dd24c' // 'Contributor'
+resource roleDefinition_resource 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  name: roleDefinition
+  scope: subscription()
+}
+
+resource roleAssignment_resource 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(roleDefinition_resource.name)
+  scope: subscription()
+  properties: {
+    principalId: managedIdentity_module.outputs.userAssignedIdentityClientId
+    roleDefinitionId: roleDefinition_resource.id
   }
-  dependsOn: [
-    managedIdentity_module
-  ]
 }
 
 module logAnalyticsWorkspace_module 'resources/loganalyticsworkspace.bicep' = {
