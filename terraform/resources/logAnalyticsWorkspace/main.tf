@@ -2,7 +2,9 @@
 .Synopsis
     Bicep template for Log Analytics Workspace, Automation account.
     Template:
-      - https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/user_assigned_identity
+      - https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/log_analytics_workspace
+      - https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/automation_account
+      - https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_diagnostic_setting
 
 .NOTES
     Author     : Roman Rabodzei
@@ -19,6 +21,12 @@ terraform {
   }
 }
 
+provider "azurerm" {
+  features {}
+}
+
+data "azurerm_subscription" "current" {}
+
 /// locals
 locals {
   nextDayAfterTheDeployment = formatdate("YYYY-MM-DD", timeadd(timestamp(), "24h"))
@@ -30,7 +38,7 @@ locals {
     },
     {
       name  = "umiId"
-      value = data.azurerm_user_assigned_identity.this_resource.id
+      value = var.userAssignedIdentityId
       encrypted = true
     }
   ]
@@ -39,14 +47,17 @@ locals {
 /// variables
 variable "deploymentResourceGroupName" {
   type = string
+  description = "Deployment resource group name."
 }
 
 variable "deploymentLocation" {
   type = string
+  description = "The location where the resources will be deployed."
 }
 
 variable "logAnalyticsWorkspaceName" {
   type = string
+  description = "The name of the Log Analytics Workspace."
 }
 
 variable "logAnalyticsWorkspaceSku" {
@@ -75,6 +86,7 @@ variable "logAnalyticsWorkspacePublicNetworkAccess" {
 
 variable "automationAccountName" {
   type = string
+  description = "The name of the Automation Account."
 }
 
 variable "automationAccountSku" {
@@ -93,11 +105,13 @@ variable "automationAccountPublicNetworkAccess" {
 
 variable "automationAccountRunbooksLocationUri" {
   type = string
+  description = "The URI of the Automation Account runbooks location."
 }
 
-variable "userAssignedIdentityName" {
+variable "userAssignedIdentityId" {
   type        = string
-  description = "The user assigned identity name."
+  description = "The user assigned identity id."
+  
 }
 
 variable "policyInitiativeName" {
@@ -108,6 +122,7 @@ variable "policyInitiativeName" {
 /// tags
 variable "tags" {
   type = map(string)
+  default = {}
 }
 
 /// resources
@@ -129,11 +144,6 @@ resource "azurerm_log_analytics_linked_service" "this_resource" {
   read_access_id      = azurerm_automation_account.this_resource.id
 }
 
-data "azurerm_user_assigned_identity" "this_resource" {
-  name                = var.userAssignedIdentityName
-  resource_group_name = var.deploymentResourceGroupName
-}
-
 resource "azurerm_automation_account" "this_resource" {
   name                = lower(var.automationAccountName)
   location            = var.deploymentLocation
@@ -141,7 +151,7 @@ resource "azurerm_automation_account" "this_resource" {
   tags                = var.tags
   identity {
     type         = "UserAssigned"
-    identity_ids = [data.azurerm_user_assigned_identity.this_resource.id]
+    identity_ids = [var.userAssignedIdentityId]
   }
   sku_name                      = var.automationAccountSku
   public_network_access_enabled = var.automationAccountPublicNetworkAccess

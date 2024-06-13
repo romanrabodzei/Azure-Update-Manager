@@ -19,7 +19,8 @@ terraform {
 provider "azurerm" {
   features {}
 }
-data "azurerm_client_config" "current" {}
+
+data "azurerm_subscription" "current" {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////// Locals and variables ///////////////////////////////////////////
@@ -34,7 +35,7 @@ locals {
   userAssignedIdentityName             = var.userAssignedIdentityName == "" ? "az-${var.deploymentEnvironment}-update-manager-mi" : var.userAssignedIdentityName
   maintenanceConfigName                = var.maintenanceConfigName == "" ? "az-${var.deploymentEnvironment}-update-manager-mc" : var.maintenanceConfigName
   maintenanceConfigAssignmentName      = var.maintenanceConfigAssignmentName == "" ? "az-${var.deploymentEnvironment}-update-manager-mca" : var.maintenanceConfigAssignmentName
-  currentStartDate                     = formatdate("yyyy-MM-dd 00:00", timestamp())
+  currentStartDate                     = formatdate("YYYY-MM-DD 00:00", timeadd(timestamp(), "24h"))
   maintenanceStartTime                 = var.customStartDate == "" ? local.currentStartDate : "${var.customStartDate} 00:00"
   policyInitiativeName                 = var.policyInitiativeName == "" ? "az-${var.deploymentEnvironment}-update-manager-initiative" : var.policyInitiativeName
   tagValue                             = var.tagValue == "" ? var.deploymentEnvironment : var.tagValue
@@ -110,7 +111,7 @@ variable "maintenanceConfigAssignmentName" {
 variable "customStartDate" {
   type        = string
   description = "The custom start date for the maintenance configuration assignment."
-  default     = ""
+  default     = "2024-06-15"
 }
 
 variable "maintenanceStartDay" {
@@ -153,6 +154,13 @@ module "managedIdentity_module" {
   tags                        = local.tags
 }
 
+resource "azurerm_role_assignment" "this_resource" {
+  scope                = data.azurerm_subscription.current.id
+  role_definition_name = "Contributor"
+  principal_id         = module.managedIdentity_module.userAssignedIdentityPrincipalId
+
+}
+
 module "logAnalyticsWorkspace_module" {
   source                               = "./resources/logAnalyticsWorkspace"
   deploymentResourceGroupName          = azurerm_resource_group.this_resource.name
@@ -160,8 +168,28 @@ module "logAnalyticsWorkspace_module" {
   logAnalyticsWorkspaceName            = local.logAnalyticsWorkspaceName
   automationAccountName                = local.automationAccountName
   automationAccountRunbooksLocationUri = local.automationAccountRunbooksLocationUri
-  userAssignedIdentityName             = local.userAssignedIdentityName
+  userAssignedIdentityId               = module.managedIdentity_module.userAssignedIdentityId
   policyInitiativeName                 = local.policyInitiativeName
   tags                                 = local.tags
-  depends_on = [ module.managedIdentity_module ]
+}
+
+module "maintenanceConfiguration_module" {
+  source                      = "./resources/maintenanceConfiguration"
+  deploymentResourceGroupName = azurerm_resource_group.this_resource.name
+  deploymentLocation          = var.deploymentLocation
+  maintenanceConfigName       = local.maintenanceConfigName
+  maintenanceStartDay         = var.maintenanceStartDay
+  maintenanceStartTime        = local.maintenanceStartTime
+  maintenanceRebootSetting    = "IfRequired"
+  tags                        = local.tags
+}
+
+module "configurationAssignment_module" {
+  source                          = "./resources/configurationAssignment"
+  deploymentResourceGroupName     = azurerm_resource_group.this_resource.name
+  deploymentLocation              = var.deploymentLocation
+  maintenanceConfigAssignmentName = local.maintenanceConfigAssignmentName
+  maintenanceConfigurationId      = module.maintenanceConfiguration_module.maintenanceConfigurationId
+  tagKey                          = var.tagKey
+  tagValue                        = local.tagValue
 }
