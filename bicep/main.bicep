@@ -45,25 +45,26 @@ param maintenanceConfigName string = 'az-${deploymentEnvironment}-update-manager
 @description('Name of the maintenance configuration assignment.')
 param maintenanceConfigAssignmentName string = 'az-${deploymentEnvironment}-update-manager-mca'
 
-@description('Custom start date for maintenance window. If not provided, current date is used. Format: yyyy-MM-dd')
+@description('Custom start date for maintenance window. If not provided, current start date will be used. Format: yyyy-MM-dd')
 param customStartDate string = ''
 param currentStartDate string = utcNow('yyyy-MM-dd 00:00')
+
 @description('Due to limitations of the Bicep language, the error "StartDateTime should be after 15 minutes of creation" may occur. The following code is used to calculate the next day. If the date is 28, the next day will be 01 next month. February has only 28 days, and 28 was taken just because of it.')
-var day = int(take(skip(currentStartDate, 8), 2)) < 28 ? string(int(take(skip(currentStartDate, 8), 2)) + 1) : '01'
-var month = int(take(skip(currentStartDate, 8), 2)) < 28
-  ? int(take(skip(currentStartDate, 5), 2)) <= 12 ? take(skip(currentStartDate, 5), 2) : '01'
-  : int(take(skip(currentStartDate, 5), 2)) + 1 < 9
-      ? '0${string(int(take(skip(currentStartDate, 5), 2)) + 1)}'
-      : int(take(skip(currentStartDate, 5), 2)) + 1 > 12 ? '01' : string(int(take(skip(currentStartDate, 5), 2)) + 1)
-var year = int(take(skip(currentStartDate, 5), 2)) < 12
-  ? string(take(currentStartDate, 4))
-  : string(int(take(currentStartDate, 4)) + 1)
-var newStartDate = replace(
-  replace(replace(currentStartDate, take(skip(currentStartDate, 8), 2), day), take(skip(currentStartDate, 5), 2), month),
-  take(currentStartDate, 4),
-  year
-)
-var maintenanceStartTime = customStartDate == '' ? newStartDate : '${customStartDate} 00:00'
+func calculateStartDate(currentStartDate string) object => {
+  day: int(take(skip(currentStartDate, 8), 2)) < 28 ? string(int(take(skip(currentStartDate, 8), 2)) + 1) : '01'
+  month: int(take(skip(currentStartDate, 8), 2)) < 28
+    ? int(take(skip(currentStartDate, 5), 2)) <= 12 ? take(skip(currentStartDate, 5), 2) : '01'
+    : int(take(skip(currentStartDate, 5), 2)) + 1 < 9
+        ? '0${string(int(take(skip(currentStartDate, 5), 2)) + 1)}'
+        : int(take(skip(currentStartDate, 5), 2)) + 1 > 12 ? '01' : string(int(take(skip(currentStartDate, 5), 2)) + 1)
+  year: int(take(skip(currentStartDate, 5), 2)) < 12
+    ? string(take(currentStartDate, 4))
+    : string(int(take(currentStartDate, 4)) + 1)
+}
+func newStartDate(currentStartDate string) string =>
+  '${calculateStartDate(currentStartDate).year}-${calculateStartDate(currentStartDate).month}-${calculateStartDate(currentStartDate).day} 00:00'
+
+var maintenanceStartTime = customStartDate == '' ? newStartDate(currentStartDate) : '${customStartDate} 00:00'
 
 @description('Custom start day for maintenance window. If not provided, Thursday is used.')
 param maintenanceStartDay string = 'Thursday'
@@ -160,7 +161,7 @@ module configurationAssignment_module 'resources/configurationAssignments.bicep'
 /////////////////////////////////////////// Policies ///////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module policies_module 'policies/initiatives/uss-initiative-def-aum-01.bicep' = {
+module policies_module 'policies/initiatives/aum-initiative-def-aum-01.bicep' = {
   name: toLower('policies-${deploymentDate}')
   params: {
     deploymentEnvironment: deploymentEnvironment

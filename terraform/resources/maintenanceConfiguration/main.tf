@@ -6,48 +6,32 @@
 
 .NOTES
     Author     : Roman Rabodzei
-    Version    : 1.0.240611
+    Version    : 1.0.240613
 */
-
-/// providers
-terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "3.107.0"
-    }
-  }
-}
-
-provider "azurerm" {
-  features {}
-}
-
-data "azurerm_subscription" "current" {}
 
 /// variables
 variable "deploymentResourceGroupName" {
-  type = string
+  type        = string
   description = "Deployment resource group name."
 }
 
 variable "deploymentLocation" {
-  type = string
+  type        = string
   description = "The location where the resources will be deployed."
 }
 
 variable "maintenanceConfigName" {
-  type = string
+  type    = string
   default = "Azure Update Manager Maintenance Configuration name."
 }
 
 variable "maintenanceStartDay" {
-  type = string
+  type        = string
   description = "The day of the week when the maintenance window starts."
 }
 
 variable "maintenanceStartTime" {
-  type = string
+  type        = string
   description = "The time of the day when the maintenance window starts."
 }
 

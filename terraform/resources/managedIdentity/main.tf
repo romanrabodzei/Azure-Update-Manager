@@ -6,44 +6,28 @@
 
 .NOTES
     Author     : Roman Rabodzei
-    Version    : 1.0.240611
+    Version    : 1.0.240613
 */
-
-/// providers
-terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "3.107.0"
-    }
-  }
-}
-
-provider "azurerm" {
-  features {}
-}
-
-data "azurerm_subscription" "current" {}
 
 /// variables
 variable "deploymentResourceGroupName" {
-  type = string
+  type        = string
   description = "Deployment resource group name."
 }
 
 variable "deploymentLocation" {
-  type = string
+  type        = string
   description = "The location where the resources will be deployed."
 }
 
 variable "userAssignedIdentityName" {
-  type = string
+  type        = string
   description = "The name of the user-assigned identity."
 }
 
 /// tags
 variable "tags" {
-  type = map(string)
+  type    = map(string)
   default = {}
 }
 

@@ -8,37 +8,21 @@
 
 .NOTES
     Author     : Roman Rabodzei
-    Version    : 1.0.240611
+    Version    : 1.0.240613
 */
-
-/// providers
-terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "3.107.0"
-    }
-  }
-}
-
-provider "azurerm" {
-  features {}
-}
-
-data "azurerm_subscription" "current" {}
 
 /// locals
 locals {
   nextDayAfterTheDeployment = formatdate("YYYY-MM-DD", timeadd(timestamp(), "24h"))
   automationAccountVariables = [
     {
-      name  = "initiativeName"
-      value = var.policyInitiativeName
+      name      = "initiativeName"
+      value     = var.policyInitiativeName
       encrypted = false
     },
     {
-      name  = "umiId"
-      value = var.userAssignedIdentityId
+      name      = "umiId"
+      value     = var.userAssignedIdentityId
       encrypted = true
     }
   ]
@@ -46,17 +30,17 @@ locals {
 
 /// variables
 variable "deploymentResourceGroupName" {
-  type = string
+  type        = string
   description = "Deployment resource group name."
 }
 
 variable "deploymentLocation" {
-  type = string
+  type        = string
   description = "The location where the resources will be deployed."
 }
 
 variable "logAnalyticsWorkspaceName" {
-  type = string
+  type        = string
   description = "The name of the Log Analytics Workspace."
 }
 
@@ -85,7 +69,7 @@ variable "logAnalyticsWorkspacePublicNetworkAccess" {
 }
 
 variable "automationAccountName" {
-  type = string
+  type        = string
   description = "The name of the Automation Account."
 }
 
@@ -104,14 +88,14 @@ variable "automationAccountPublicNetworkAccess" {
 }
 
 variable "automationAccountRunbooksLocationUri" {
-  type = string
+  type        = string
   description = "The URI of the Automation Account runbooks location."
 }
 
 variable "userAssignedIdentityId" {
   type        = string
   description = "The user assigned identity id."
-  
+
 }
 
 variable "policyInitiativeName" {
@@ -121,7 +105,7 @@ variable "policyInitiativeName" {
 
 /// tags
 variable "tags" {
-  type = map(string)
+  type    = map(string)
   default = {}
 }
 
@@ -189,7 +173,13 @@ resource "azurerm_automation_schedule" "this_resource" {
   expiry_time             = "9999-12-31T00:00:00+00:00"
   interval                = 1
   frequency               = "Day"
-  timezone                = "UTC"
+  timezone                = "Etc/UTC"
+
+  lifecycle {
+    ignore_changes = [
+      start_time,
+    ]
+  }
 }
 
 resource "azurerm_automation_job_schedule" "this_resource" {
@@ -200,8 +190,8 @@ resource "azurerm_automation_job_schedule" "this_resource" {
 }
 
 resource "azurerm_monitor_diagnostic_setting" "this_resource" {
-  name               = lower("send-data-to-${var.logAnalyticsWorkspaceName}")
-  target_resource_id = azurerm_automation_account.this_resource.id
+  name                       = lower("send-data-to-${var.logAnalyticsWorkspaceName}")
+  target_resource_id         = azurerm_automation_account.this_resource.id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.this_resource.id
 
   enabled_log {

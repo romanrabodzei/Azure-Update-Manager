@@ -193,3 +193,18 @@ module "configurationAssignment_module" {
   tagKey                          = var.tagKey
   tagValue                        = local.tagValue
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////// Policies ///////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module "policies_module" {
+  source                             = "./policies/initiatives"
+  deploymentEnvironment              = var.deploymentEnvironment
+  deploymentLocation                 = var.deploymentLocation
+  policyInitiativeName               = local.policyInitiativeName
+  userAssignedIdentitiesId           = module.managedIdentity_module.userAssignedIdentityId
+  maintenanceConfigurationResourceId = module.maintenanceConfiguration_module.maintenanceConfigurationId
+  tagKey                             = var.tagKey
+  tagValue                           = local.tagValue
+}
