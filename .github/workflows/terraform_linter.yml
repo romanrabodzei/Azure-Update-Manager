@@ -16,8 +16,8 @@ on:
   pull_request:
     branches:
       - main
-    paths:
-      - 'terraform/**'
+    # paths:
+    #   - 'terraform/**'
 
 permissions:
   contents: read
