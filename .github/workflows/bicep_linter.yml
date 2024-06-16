@@ -16,8 +16,8 @@ on:
   pull_request:
     branches:
       - main
-    paths:
-      - 'bicep/**'
+    # paths:
+    #   - 'bicep/**'
 
 permissions:
   id-token: write
