@@ -12,12 +12,12 @@
 
 name: Bicep Linter
 
-on: push
-  # push:
+on:
+  push:
   #   branches:
   #     - 'main'
-  #   paths:
-  #     - ./bicep/*
+    paths:
+      - ./bicep/*
   # pull_request:
   #   branches:
   #     - main
@@ -43,7 +43,7 @@ jobs:
 
       - name: Bicep Build
         run: |
-          az bicep build ${{ env.working-directory }}/main.bicep
+          az bicep build --file ${{ env.working-directory }}/main.bicep
 
       - name: RunPreflightValidation
         run: |
