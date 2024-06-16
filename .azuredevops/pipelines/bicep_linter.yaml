@@ -1,0 +1,56 @@
+# .Synopsis
+#     Bicep linter pipeline
+#
+# .NOTES
+#     Author     : Roman Rabodzei
+#     Version    : 1.0.240616
+#
+#             _
+#         .__(.)<  (MEOW)
+#          \___)
+#  ~~~~~~~~~~~~~~~~~~~~~~~~
+
+name: Bicep Linter pipeline
+
+trigger:
+  none
+
+pr:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: ubuntu-latest
+
+jobs:
+  - deployment: bicep_linter
+    displayName:  Bicep Linter job
+    environment: 'linter'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            # Checkout the repository to the Azure DevOps agent
+            - checkout: self
+              fetchDepth: 0
+
+            # Run the Bicep linter on the Bicep templates to verify the syntax
+            - task: CmdLine@2
+              displayName: 'Build Bicep files'
+              inputs:
+                script: |
+                  az bicep build --file ./bicep/main.bicep
+                workingDirectory: '$(system.defaultWorkingDirectory)'
+                failOnStderr: true
+
+            # Run preflight validation of the Bicep templates
+            - task: AzureCLI@2
+              displayName: 'Preflight Validation'
+              inputs:
+                azureSubscription: $(subscription)
+                scriptType: 'bash'
+                scriptLocation: 'inlineScript'
+                inlineScript: |
+                  az deployment sub validate --name $(Build.BuildId) --location westeurope --template-file ./bicep/main.bicep --parameters deploymentEnvironment=linter
+                failOnStandardError: true

@@ -10,14 +10,12 @@
 #          \___)
 #  ~~~~~~~~~~~~~~~~~~~~~~~~
 
-name: Bicep Linter
+name: Bicep Linter workflow
 
 on:
   pull_request:
     branches:
       - main
-    paths:
-      - 'bicep/**'
 
 permissions:
   id-token: write
@@ -25,7 +23,7 @@ permissions:
 
 jobs:
   bicep_linter:
-    name: Bicep Linter
+    name: Bicep Linter job
     runs-on: ubuntu-latest
     environment: "linter"
     steps:
@@ -34,11 +32,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      # Format all Bicep files in the bicep directory and subdirectories
-      - name: Format Bicep files
-        run: |
-          find ./bicep -name '*.bicep' -exec az bicep format --file {} \;
 
       # Run the Bicep linter on the Bicep templates to verify the syntax
       - name: Build Bicep files

@@ -10,20 +10,19 @@
 #          \___)
 #  ~~~~~~~~~~~~~~~~~~~~~~~~
 
-name: Terraform Linter
+name: Terraform Linter workflow
 
 on:
   pull_request:
     branches:
       - main
-    paths:
-      - 'terraform/**'
 
 permissions:
   contents: read
 
 jobs:
   terraform_linter:
+    name: Terraform Linter job
     runs-on: ubuntu-latest
     environment: "linter"
     steps:
@@ -34,20 +33,22 @@ jobs:
           fetch-depth: 0
       
       # Install the preferred version of Terraform CLI 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+      # - name: Setup Terraform
+      #   uses: hashicorp/setup-terraform@v3
       
       # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
       - name: Terraform Init
         id: init
         run: |
           terraform init -backend=false
+        working-directory: terraform
 
       # Run a terraform fmt for push
       - name: Terraform Format
         id: fmt
         run: |
           terraform fmt -recursive -check
+        working-directory: terraform
 
       # Run a terraform validate
       # Run even if formatting fails
@@ -56,3 +57,4 @@ jobs:
         if: (success() || failure())
         run: |
           terraform validate
+        working-directory: terraform
