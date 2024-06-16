@@ -17,7 +17,7 @@ on:
   #   branches:
   #     - 'main'
     paths:
-      - ./bicep
+      - 'bicep/**'
   # pull_request:
   #   branches:
   #     - main
