@@ -46,8 +46,8 @@ jobs:
       # Run a terraform fmt for push
       - name: Terraform Format
         id: fmt
-        run: \
-          terraform fmt -check -recursive
+        run: |
+          terraform fmt -recursive -check
 
       # Run a terraform validate
       # Run even if formatting fails
