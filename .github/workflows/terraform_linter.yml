@@ -41,12 +41,14 @@ jobs:
         id: init
         run: |
           terraform init -backend=false
+        working-directory: terraform
 
       # Run a terraform fmt for push
       - name: Terraform Format
         id: fmt
         run: |
           terraform fmt -recursive -check
+        working-directory: terraform
 
       # Run a terraform validate
       # Run even if formatting fails
@@ -55,3 +57,4 @@ jobs:
         if: (success() || failure())
         run: |
           terraform validate
+        working-directory: terraform
