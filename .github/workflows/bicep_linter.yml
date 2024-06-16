@@ -39,6 +39,8 @@ jobs:
         run: |
           pwd
           ls -l
+          cd bicep
+          ls -l
           az bicep build --file ../bicep/main.bicep
 
       - name: Preflight Validation
