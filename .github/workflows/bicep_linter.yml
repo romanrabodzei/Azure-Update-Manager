@@ -15,7 +15,8 @@ name: Bicep Linter
 on:
   push:
     branches:
-      - '!main'
+      - 'main'
+      - 'feature/*'
     # paths:
     #   - 'bicep/**'
   # pull_request:
