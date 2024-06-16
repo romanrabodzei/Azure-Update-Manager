@@ -13,7 +13,14 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "3.107.0"
     }
-  }
+  }/*
+  backend "remote" {
+    organization = ""
+
+    workspaces {
+      name = ""
+    }
+  }*/
 }
 
 provider "azurerm" {
