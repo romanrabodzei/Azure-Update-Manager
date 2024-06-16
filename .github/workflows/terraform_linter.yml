@@ -47,7 +47,7 @@ jobs:
       - name: Terraform Format
         id: fmt
         run: \
-          terraform fmt -check -recursive
+          terraform fmt -recursive -check 
 
       # Run a terraform validate
       # Run even if formatting fails
