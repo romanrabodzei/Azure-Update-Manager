@@ -32,16 +32,6 @@ jobs:
             - checkout: self
               fetchDepth: 0
 
-            # Format all Bicep files in the bicep directory and subdirectories
-            - task: CmdLine@2
-              displayName: 'Format Bicep files'
-              inputs:
-                script: |
-                  az config set bicep.use_binary_from_path=true
-                  find ./bicep -name '*.bicep' -exec az bicep format --file {} \;
-                workingDirectory: '$(system.defaultWorkingDirectory)'
-                failOnStderr: true
-
             # Run the Bicep linter on the Bicep templates to verify the syntax
             - task: CmdLine@2
               displayName: 'Build Bicep files'
