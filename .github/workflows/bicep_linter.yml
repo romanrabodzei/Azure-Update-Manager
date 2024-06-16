@@ -35,7 +35,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          path: ${{ env.working-directory }}
           fetch-depth: 0
 
       - name: Bicep Build
