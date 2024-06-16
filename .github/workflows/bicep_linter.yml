@@ -37,6 +37,7 @@ jobs:
 
       - name: Bicep Build
         run: |
+          pwd
           ls -l
           az bicep build --file ../bicep/main.bicep
 
