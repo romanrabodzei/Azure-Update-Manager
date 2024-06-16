@@ -10,7 +10,7 @@
 #          \___)
 #  ~~~~~~~~~~~~~~~~~~~~~~~~
 
-name: Bicep Linter
+name: Bicep Linter workflow
 
 on:
   pull_request:
@@ -23,7 +23,7 @@ permissions:
 
 jobs:
   bicep_linter:
-    name: Bicep Linter
+    name: Bicep Linter job
     runs-on: ubuntu-latest
     environment: "linter"
     steps:

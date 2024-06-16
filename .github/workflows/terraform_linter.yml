@@ -10,7 +10,7 @@
 #          \___)
 #  ~~~~~~~~~~~~~~~~~~~~~~~~
 
-name: Terraform Linter
+name: Terraform Linter workflow
 
 on:
   pull_request:
@@ -22,6 +22,7 @@ permissions:
 
 jobs:
   terraform_linter:
+    name: Terraform Linter job
     runs-on: ubuntu-latest
     environment: "linter"
     steps:
