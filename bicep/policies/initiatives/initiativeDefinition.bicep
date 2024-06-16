@@ -4,7 +4,7 @@
 
 .NOTES
     Author     : Roman Rabodzei
-    Version    : 1.0.240611
+    Version    : 1.0.240615
 */
 
 targetScope = 'subscription'
@@ -49,7 +49,7 @@ module aum_policy_periodic_check_updates_on_azure_vms '../definitions/policy-per
 }
 
 /// initiative
-resource aum_initiative_def_aum_01 'Microsoft.Authorization/policySetDefinitions@2023-04-01' = {
+resource aum_initiative_def_01 'Microsoft.Authorization/policySetDefinitions@2023-04-01' = {
   name: toLower(policyInitiativeName)
   properties: {
     displayName: '${toUpper(deploymentEnvironment)}. Azure Update Management Initiative'
@@ -136,7 +136,7 @@ resource aum_initiative_asgn_01 'Microsoft.Authorization/policyAssignments@2024-
     displayName: '${toUpper(deploymentEnvironment)}. Azure Update Management Initiative Assignment'
     description: 'Azure Update Management Initiative Assignment'
     enforcementMode: 'Default'
-    policyDefinitionId: aum_initiative_def_aum_01.id
+    policyDefinitionId: aum_initiative_def_01.id
     notScopes: []
     parameters: {
       tagsObject: {

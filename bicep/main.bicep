@@ -113,7 +113,7 @@ resource roleAssignment_resource 'Microsoft.Authorization/roleAssignments@2022-0
   }
 }
 
-module logAnalyticsWorkspace_module './resources/loganalyticsworkspace.bicep' = {
+module logAnalyticsWorkspace_module './resources/logAnalyticsWorkspace.bicep' = {
   scope: resourceGroup_resource
   name: toLower('logAnalyticsWorkspace-${deploymentDate}')
   params: {
@@ -161,7 +161,7 @@ module configurationAssignment_module './resources/configurationAssignments.bice
 /////////////////////////////////////////// Policies ///////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-module policies_module './policies/initiatives/aum-initiative-def-aum-01.bicep' = {
+module policies_module './policies/initiatives/initiativeDefinition.bicep' = {
   name: toLower('policies-${deploymentDate}')
   params: {
     deploymentEnvironment: deploymentEnvironment
