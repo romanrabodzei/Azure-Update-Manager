@@ -49,17 +49,6 @@ jobs:
                   az bicep build --file ./bicep/main.bicep
                 workingDirectory: '$(system.defaultWorkingDirectory)'
                 failOnStderr: true
-            
-            # Login to Azure
-            - task: AzureCLI@2
-              displayName: 'Login to Azure'
-              inputs:
-                azureSubscription: $(subscription)
-                scriptType: 'bash'
-                scriptLocation: 'inlineScript'
-                inlineScript: |
-                  az login --service-principal -u $(servicePrincipalId) -p $(servicePrincipalKey) --tenant $(tenantId)
-                failOnStandardError: true
 
             # Run preflight validation of the Bicep templates
             - task: AzureCLI@2
