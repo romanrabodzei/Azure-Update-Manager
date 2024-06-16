@@ -41,7 +41,7 @@ jobs:
               inputs:
                 script: |
                   terraform init -backend=false
-                workingDirectory: '$(system.defaultWorkingDirectory)'
+                workingDirectory: '$(system.defaultWorkingDirectory)/terraform'
                 failOnStderr: true
 
             # Run a terraform fmt for push
@@ -50,7 +50,7 @@ jobs:
               inputs:
                 script: |
                   terraform fmt -recursive -check
-                workingDirectory: '$(system.defaultWorkingDirectory)'
+                workingDirectory: '$(system.defaultWorkingDirectory)/terraform'
                 failOnStderr: true
 
             # Run a terraform validate
@@ -60,6 +60,6 @@ jobs:
               inputs:
                 script: |
                   terraform validate
-                workingDirectory: '$(system.defaultWorkingDirectory)'
+                workingDirectory: '$(system.defaultWorkingDirectory)/terraform'
                 failOnStderr: true
               condition: succeededOrFailed()
