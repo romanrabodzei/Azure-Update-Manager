@@ -33,8 +33,8 @@ jobs:
           fetch-depth: 0
       
       # Install the preferred version of Terraform CLI 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+      # - name: Setup Terraform
+      #   uses: hashicorp/setup-terraform@v3
       
       # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
       - name: Terraform Init
