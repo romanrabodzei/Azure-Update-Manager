@@ -19,9 +19,9 @@ on:
       - 'feature/*'
     # paths:
     #   - 'bicep/**'
-  # pull_request:
-  #   branches:
-  #     - main
+  pull_request:
+    branches:
+      - main
   #   paths:
   #     - ./bicep/*
 
