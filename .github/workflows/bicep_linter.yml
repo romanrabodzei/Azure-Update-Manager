@@ -12,17 +12,17 @@
 
 name: Bicep Linter
 
-on:
-  push:
-    branches:
-      - '!main'
-    paths:
-      - ./bicep/*
-  pull_request:
-    branches:
-      - main
-    paths:
-      - ./bicep/*
+on: push
+  # push:
+  #   branches:
+  #     - 'main'
+  #   paths:
+  #     - ./bicep/*
+  # pull_request:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - ./bicep/*
 
 permissions:
   contents: read
