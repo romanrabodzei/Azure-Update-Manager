@@ -4,7 +4,7 @@
 
 .NOTES
     Author     : Roman Rabodzei
-    Version    : 1.0.240615
+    Version    : 1.0.240616
 */
 
 targetScope = 'subscription'

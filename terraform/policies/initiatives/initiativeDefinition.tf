@@ -31,7 +31,7 @@ variable "deploymentEnvironment" {
 variable "deploymentLocation" {
   type        = string
   description = "The location where the resources will be deployed."
-  
+
 }
 
 variable "policyInitiativeName" {
