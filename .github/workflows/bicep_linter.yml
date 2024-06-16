@@ -1,0 +1,50 @@
+# .Synopsis
+#     Bicep linter pipeline
+#
+# .NOTES
+#     Author     : Roman Rabodzei
+#     Version    : 1.0.240617
+#
+#             _
+#         .__(.)<  (MEOW)
+#          \___)
+#  ~~~~~~~~~~~~~~~~~~~~~~~~
+
+name: Bicep Linter
+
+on:
+  push:
+    branches:
+      - '!main'
+    paths:
+      - ./bicep/*
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ./bicep/*
+
+permissions:
+  contents: read
+
+env:
+  working-directory: "./bicep"
+
+jobs:
+  bicep_linter:
+    name: Bicep Linter
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          path: ${{ env.working-directory }}
+          fetch-depth: 0
+
+      - name: Bicep Build
+        run: |
+          az bicep build ${{ env.working-directory }}/main.bicep
+
+      - name: RunPreflightValidation
+        run: |
+          az deployment sub validate --name $GITHUB_RUN_ID --location westeurope --template-file ${{ env.working-directory }}/main.bicep --parameters deploymentEnvironment=linter
