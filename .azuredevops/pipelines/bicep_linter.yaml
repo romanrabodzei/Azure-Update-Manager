@@ -12,6 +12,9 @@
 
 name: Bicep Linter pipeline
 
+trigger:
+  none
+
 pr:
   branches:
     include:
