@@ -27,20 +27,21 @@ jobs:
     runs-on: ubuntu-latest
     environment: "linter"
     steps:
+      # Checkout the repository to the GitHub Actions runner
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
+      # Run the Bicep linter on the Bicep templates to verify the syntax
       - name: Bicep Build
         run: |
           az bicep build --file ./bicep/main.bicep
-
+      # Login to Azure
       - name: Login to Azure
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-
+      # Run preflight validation of the Bicep templates
       - name: Preflight Validation
         run: |
           az deployment sub validate --name $GITHUB_RUN_ID --location westeurope --template-file ./bicep/main.bicep --parameters deploymentEnvironment=linter
