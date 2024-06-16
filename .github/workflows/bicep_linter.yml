@@ -12,12 +12,12 @@
 
 name: Bicep Linter
 
-on:
-  push:
+on: push
+  # push:
   #   branches:
   #     - 'main'
-    paths:
-      - 'bicep/**'
+    # paths:
+    #   - 'bicep/**'
   # pull_request:
   #   branches:
   #     - main
