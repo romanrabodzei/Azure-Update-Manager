@@ -1,0 +1,41 @@
+# .Synopsis
+#     Terraform linter pipeline
+#
+# .NOTES
+#     Author     : Roman Rabodzei
+#     Version    : 1.0.240617
+#
+#             _
+#         .__(.)<  (MEOW)
+#          \___)
+#  ~~~~~~~~~~~~~~~~~~~~~~~~
+
+name: Terraform Linter
+
+on:
+  push:
+    branches:
+      - '!main'
+    paths:
+      - ./terraform/*
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ./terraform/*
+
+permissions:
+  contents: read
+
+env:
+  working-directory: "./terraform"
+
+jobs:
+  terraform_linter:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          path: ${{ env.working-directory }}
+          fetch-depth: 0
