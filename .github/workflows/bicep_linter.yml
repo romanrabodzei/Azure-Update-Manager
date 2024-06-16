@@ -26,6 +26,7 @@ on:
   #     - ./bicep/*
 
 permissions:
+  id-token: write
   contents: read
 
 jobs:
