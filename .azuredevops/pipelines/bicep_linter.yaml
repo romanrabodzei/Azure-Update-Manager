@@ -37,6 +37,7 @@ jobs:
               displayName: 'Format Bicep files'
               inputs:
                 script: |
+                  az config set bicep.use_binary_from_path=true
                   find ./bicep -name '*.bicep' -exec az bicep format --file {} \;
                 workingDirectory: '$(system.defaultWorkingDirectory)'
                 failOnStderr: true
