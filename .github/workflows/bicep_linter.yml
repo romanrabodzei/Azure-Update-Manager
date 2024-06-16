@@ -21,10 +21,14 @@ permissions:
   id-token: write
   contents: read
 
+env:
+  environment: "linter"
+
 jobs:
   bicep_linter:
     name: Bicep Linter
     runs-on: ubuntu-latest
+    environment: ${{ env.environment }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
