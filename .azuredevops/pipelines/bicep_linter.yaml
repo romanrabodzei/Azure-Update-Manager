@@ -54,7 +54,7 @@ jobs:
             - task: AzureCLI@2
               displayName: 'Login to Azure'
               inputs:
-                azureSubscription: 'Azure DevOps'
+                azureSubscription: $(subscription)
                 scriptType: 'bash'
                 scriptLocation: 'inlineScript'
                 inlineScript: |
@@ -65,7 +65,7 @@ jobs:
             - task: AzureCLI@2
               displayName: 'Preflight Validation'
               inputs:
-                azureSubscription: 'Azure DevOps'
+                azureSubscription: $(subscription)
                 scriptType: 'bash'
                 scriptLocation: 'inlineScript'
                 inlineScript: |
