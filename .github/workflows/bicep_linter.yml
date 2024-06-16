@@ -34,13 +34,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Bicep Build
         run: |
           az bicep build --file bicep/main.bicep
 
-      - name: RunPreflightValidation
+      - name: Preflight Validation
         run: |
           az deployment sub validate --name $GITHUB_RUN_ID --location westeurope --template-file bicep/main.bicep --parameters deploymentEnvironment=linter
