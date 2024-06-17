@@ -7,7 +7,7 @@
 
 .NOTES
     Author     : Roman Rabodzei
-    Version    : 1.0.240611
+    Version    : 1.0.240616
 */
 
 /// deploymentScope
@@ -137,7 +137,7 @@ resource automationAccount_resource 'Microsoft.Automation/automationAccounts@202
     }
   }
   resource jobSchedule 'jobSchedules' = {
-    name: guid(subscription().subscriptionId, runbook.name, schedule.name)
+    name: guid(uniqueString(subscription().subscriptionId), runbook.name, schedule.name)
     properties: {
       runbook: {
         name: runbook.name

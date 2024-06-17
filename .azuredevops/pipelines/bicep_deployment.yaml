@@ -1,0 +1,66 @@
+# .Synopsis
+#     Bicep deployment pipeline
+#
+# .NOTES
+#     Author     : Roman Rabodzei
+#     Version    : 1.0.240616
+#
+#             _
+#         .__(.)<  (MEOW)
+#          \___)
+#  ~~~~~~~~~~~~~~~~~~~~~~~~
+
+name: "Bicep_deployment_pipeline_1.0.0$(Rev:.r)"
+
+trigger: 
+  none
+
+pr: 
+  none
+
+parameters:
+  - name: deploymentLocation
+    displayName: 'Deployment location'
+    type: string
+    default: 'west europe'
+  - name: deploymentEnvironment
+    displayName: 'Deployment environment'
+    type: string
+    default: 'poc'
+
+pool: 
+  vmImage: 'ubuntu-latest'
+
+jobs:
+  - job: bicep_check_changes
+    displayName: 'Preview infrastructure changes'
+    steps:
+      - checkout: self
+      - task: AzureCLI@2
+        displayName: 'Preview changes'
+        inputs:
+          azureSubscription: $(subscription)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            az deployment sub what-if --name "$(Build.BuildNumber)" --location "${{ parameters.deploymentLocation }}" --template-file ./main.bicep --parameters deploymentEnvironment="${{ parameters.deploymentEnvironment }}"
+          workingDirectory: "$(system.defaultWorkingDirectory)/bicep"
+
+  - deployment: bicep_deploy
+    environment: ${{ parameters.deploymentEnvironment }}
+    displayName: 'Deploy infrastructure'
+    dependsOn: bicep_check_changes
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - checkout: self
+            - task: AzureCLI@2
+              displayName: 'Deploy infrastructure'
+              inputs:
+                azureSubscription: $(subscription)
+                scriptType: 'bash'
+                scriptLocation: 'inlineScript'
+                inlineScript: |
+                  az deployment sub create --name "$(Build.BuildNumber)" --location "${{ parameters.deploymentLocation }}" --template-file ./main.bicep --parameters deploymentEnvironment="${{ parameters.deploymentEnvironment }}"
+                workingDirectory: "$(system.defaultWorkingDirectory)/bicep"
