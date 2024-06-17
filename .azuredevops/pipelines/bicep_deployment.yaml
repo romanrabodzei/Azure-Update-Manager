@@ -10,7 +10,7 @@
 #          \___)
 #  ~~~~~~~~~~~~~~~~~~~~~~~~
 
-name: 'Bicep deployment pipeline 1.0.0$(Rev:.r)'
+name: 'Bicep_deployment_pipeline_1.0.0$(Rev:.r)'
 
 trigger: none
 
@@ -20,7 +20,7 @@ parameters:
   - name: deploymentLocation
     displayName: 'Deployment location'
     type: string
-    default: 'West Europe'
+    default: 'west europe'
   - name: deploymentEnvironment
     displayName: 'Deployment environment'
     type: string

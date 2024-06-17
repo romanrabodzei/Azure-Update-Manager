@@ -10,7 +10,7 @@
 #          \___)
 #  ~~~~~~~~~~~~~~~~~~~~~~~~
 
-name: Bicep Linter pipeline
+name: 'Bicep_Linter_pipeline'
 
 trigger:
   none
@@ -22,7 +22,7 @@ pr:
 
 variables:
   - name: deploymentLocation
-    value: 'westeurope'
+    value: 'west europe'
   - name: deploymentEnvironment
     value: 'linter'
 

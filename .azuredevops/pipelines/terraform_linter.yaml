@@ -10,7 +10,7 @@
 #          \___)
 #  ~~~~~~~~~~~~~~~~~~~~~~~~
 
-name: Terraform Linter pipeline
+name: 'Terraform_Linter_pipeline'
 
 trigger:
   none
