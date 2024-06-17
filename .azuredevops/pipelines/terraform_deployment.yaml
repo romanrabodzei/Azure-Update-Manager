@@ -84,4 +84,4 @@ stages:
                     scriptLocation: "inlineScript"
                     inlineScript: |
                       terraform apply -var="deploymentLocation=${{ parameters.deploymentLocation }}" -var="deploymentEnvironment=${{ parameters.deploymentEnvironment }}"
-                  workingDirectory: "$(system.defaultWorkingDirectory)/terraform"
+                    workingDirectory: "$(system.defaultWorkingDirectory)/terraform"
