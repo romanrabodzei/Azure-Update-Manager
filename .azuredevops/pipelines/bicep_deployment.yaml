@@ -47,7 +47,7 @@ jobs:
           workingDirectory: "$(system.defaultWorkingDirectory)/bicep"
 
   - deployment: bicep_deploy
-    environment: $(deploymentEnvironment)
+    environment: ${{ parameters.deploymentEnvironment }}
     displayName: 'Deploy infrastructure'
     dependsOn: bicep_check_changes
     strategy:
