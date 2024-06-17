@@ -10,7 +10,7 @@
 #          \___)
 #  ~~~~~~~~~~~~~~~~~~~~~~~~
 
-name: Bicep Deployment workflow 1.0.$GITHUB_RUN_NUMBER
+name: "Bicep_Deployment_workflow_1.0.$GITHUB_RUN_NUMBER"
 
 on:
   workflow_dispatch:
