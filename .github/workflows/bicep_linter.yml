@@ -21,6 +21,10 @@ permissions:
   id-token: write
   contents: read
 
+env:
+  deploymentLocation: "westeurope"
+  deploymentEnvironment: "linter"
+
 jobs:
   bicep_linter:
     name: Bicep Linter job
@@ -36,7 +40,8 @@ jobs:
       # Run the Bicep linter on the Bicep templates to verify the syntax
       - name: Build Bicep files
         run: |
-          az bicep build --file ./bicep/main.bicep
+          az bicep build --file ./main.bicep
+        working-directory: bicep
 
       # Login to Azure
       - name: Login to Azure
@@ -47,4 +52,5 @@ jobs:
       # Run preflight validation of the Bicep templates
       - name: Preflight Validation
         run: |
-          az deployment sub validate --name $GITHUB_RUN_ID --location westeurope --template-file ./bicep/main.bicep --parameters deploymentEnvironment=linter
+          az deployment sub validate --name $GITHUB_RUN_ID --location ${{ env.deploymentLocation}} --template-file ./main.bicep --parameters deploymentEnvironment=${{ env.deploymentEnvironment}}
+        working-directory: bicep

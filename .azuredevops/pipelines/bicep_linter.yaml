@@ -20,6 +20,12 @@ pr:
     include:
       - main
 
+variables:
+  - name: deploymentLocation
+    value: 'westeurope'
+  - name: deploymentEnvironment
+    value: 'linter'
+
 pool:
   vmImage: ubuntu-latest
 
@@ -40,9 +46,9 @@ jobs:
               displayName: 'Build Bicep files'
               inputs:
                 script: |
-                  az bicep build --file ./bicep/main.bicep
-                workingDirectory: '$(system.defaultWorkingDirectory)'
+                  az bicep build --file ./main.bicep
                 failOnStderr: true
+                workingDirectory: '$(system.defaultWorkingDirectory)/bicep'
 
             # Run preflight validation of the Bicep templates
             - task: AzureCLI@2
@@ -52,5 +58,6 @@ jobs:
                 scriptType: 'bash'
                 scriptLocation: 'inlineScript'
                 inlineScript: |
-                  az deployment sub validate --name $(Build.BuildId) --location westeurope --template-file ./bicep/main.bicep --parameters deploymentEnvironment=linter
+                  az deployment sub validate --name $(Build.BuildId) --location $(deploymentLocation) --template-file ./main.bicep --parameters deploymentEnvironment=$(deploymentEnvironment)
                 failOnStandardError: true
+                workingDirectory: '$(system.defaultWorkingDirectory)/bicep'
