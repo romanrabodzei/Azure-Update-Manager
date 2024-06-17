@@ -47,7 +47,7 @@ jobs:
 
       - name: Preview changes
         run: |
-          az deployment sub what-if --name "$GITHUB_RUN_ID" --location "${{ inputs.deploymentLocation }}" --template-file ./main.bicep --parameters deploymentEnvironment="${{ inputs.deploymentEnvironment }}"
+          az deployment sub what-if --name $GITHUB_RUN_ID --location "${{ inputs.deploymentLocation }}" --template-file ./main.bicep --parameters deploymentEnvironment="${{ inputs.deploymentEnvironment }}"
         working-directory: bicep
 
   bicep_deploy:
@@ -69,5 +69,5 @@ jobs:
 
       - name: Deploy templates
         run: |
-          az deployment sub create --name "$GITHUB_RUN_ID" --location "${{ inputs.deploymentLocation }}" --template-file ./main.bicep --parameters deploymentEnvironment="${{ inputs.deploymentEnvironment }}"
+          az deployment sub create --name $GITHUB_RUN_ID --location "${{ inputs.deploymentLocation }}" --template-file ./main.bicep --parameters deploymentEnvironment="${{ inputs.deploymentEnvironment }}"
         working-directory: bicep
