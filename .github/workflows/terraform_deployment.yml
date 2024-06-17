@@ -45,6 +45,12 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Terraform Init
+        id: init
+        run: |
+          terraform init -backend=false
+        working-directory: terraform
+
       - name: Preview changes
         run: |
           terraform plan -var="deploymentLocation=${{ inputs.deploymentLocation }}" -var="deploymentEnvironment=${{ inputs.deploymentEnvironment }}"
@@ -65,6 +71,12 @@ jobs:
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Terraform Init
+        id: init
+        run: |
+          terraform init -backend=false
+        working-directory: terraform
 
       - name: Apply changes
         run: |
