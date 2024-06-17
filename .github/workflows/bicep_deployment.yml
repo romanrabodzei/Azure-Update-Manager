@@ -10,7 +10,7 @@
 #          \___)
 #  ~~~~~~~~~~~~~~~~~~~~~~~~
 
-name: Bicep deployment workflow
+name: Bicep Deployment workflow
 
 on:
   workflow_dispatch:
@@ -19,7 +19,7 @@ on:
         description: "Deployment location"
         type: string
         required: true
-        default: "West Europe"
+        default: "west europe"
       deploymentEnvironment:
         description: "Deployment environment"
         type: environment
