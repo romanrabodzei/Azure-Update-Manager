@@ -10,7 +10,7 @@
 #          \___)
 #  ~~~~~~~~~~~~~~~~~~~~~~~~
 
-name: Bicep Deployment pipeline
+name: "Bicep_Deployment_pipeline_1.0.0$(Rev:.r)"
 
 trigger: none
 
@@ -25,10 +25,6 @@ parameters:
     displayName: "Deployment environment"
     type: string
     default: "poc"
-
-variables:
-  deploymentName: "ado_pipeline_1.0.$(Rev:.r)"
-
 
 pool:
   vmImage: "ubuntu-latest"
@@ -47,7 +43,7 @@ stages:
               scriptType: "bash"
               scriptLocation: "inlineScript"
               inlineScript: |
-                az deployment sub what-if --name $(deploymentName) --location "${{ parameters.deploymentLocation }}" --template-file ./main.bicep --parameters deploymentEnvironment="${{ parameters.deploymentEnvironment }}"
+                az deployment sub what-if --name "$(Build.BuildNumber)" --location "${{ parameters.deploymentLocation }}" --template-file ./main.bicep --parameters deploymentEnvironment="${{ parameters.deploymentEnvironment }}"
               workingDirectory: "$(system.defaultWorkingDirectory)/bicep"
 
   - stage: bicep_deploy
@@ -69,5 +65,5 @@ stages:
                     scriptType: "bash"
                     scriptLocation: "inlineScript"
                     inlineScript: |
-                      az deployment sub create --name $(deploymentName) --location "${{ parameters.deploymentLocation }}" --template-file ./main.bicep --parameters deploymentEnvironment="${{ parameters.deploymentEnvironment }}"
+                      az deployment sub create --name "$(Build.BuildNumber)" --location "${{ parameters.deploymentLocation }}" --template-file ./main.bicep --parameters deploymentEnvironment="${{ parameters.deploymentEnvironment }}"
                     workingDirectory: "$(system.defaultWorkingDirectory)/bicep"
