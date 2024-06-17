@@ -10,7 +10,7 @@
 #          \___)
 #  ~~~~~~~~~~~~~~~~~~~~~~~~
 
-name: 'Bicep_Linter_pipeline'
+name: "Bicep_Linter_pipeline"
 
 trigger:
   none
