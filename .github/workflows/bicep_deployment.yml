@@ -3,7 +3,7 @@
 #
 # .NOTES
 #     Author     : Roman Rabodzei
-#     Version    : 1.0.240616
+#     Version    : 1.0.240617
 #
 #             _
 #         .__(.)<  (MEOW)
@@ -54,7 +54,7 @@ jobs:
     name: Deploy infrastructure
     runs-on: ubuntu-latest
     needs: bicep_check_changes
-    environment: ${{ inputs.environment }}
+    environment: ${{ inputs.deploymentEnvironment }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

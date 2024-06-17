@@ -80,5 +80,5 @@ jobs:
 
       - name: Apply changes
         run: |
-          terraform apply -auto-approve
+          terraform apply -auto-approve -var="deploymentLocation=${{ inputs.deploymentLocation }}" -var="deploymentEnvironment=${{ inputs.deploymentEnvironment }}"
         working-directory: terraform
