@@ -10,7 +10,9 @@
 #          \___)
 #  ~~~~~~~~~~~~~~~~~~~~~~~~
 
-name: Bicep deployment pipeline
+name: 'Bicep deployment pipeline 1.0.0$(Rev:.r)'
+
+trigger: none
 
 pr: none
 
