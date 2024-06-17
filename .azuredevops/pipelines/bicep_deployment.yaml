@@ -12,7 +12,7 @@
 
 name: Bicep deployment pipeline
 
-trigger: none
+pr: none
 
 parameters:
   - name: deploymentLocation
