@@ -10,7 +10,7 @@
 #          \___)
 #  ~~~~~~~~~~~~~~~~~~~~~~~~
 
-name: Bicep Deployment workflow
+name: Bicep Deployment workflow 1.0.0$(Rev:.r)
 
 on:
   workflow_dispatch:
