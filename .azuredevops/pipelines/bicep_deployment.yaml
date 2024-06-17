@@ -39,7 +39,7 @@ jobs:
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
-            az deployment sub what-if --name '$(Build.BuildNumber)' --location ${{ parameters.deploymentLocation }} --template-file ./main.bicep --parameters deploymentEnvironment=${{ parameters.deploymentEnvironment }}
+            az deployment sub what-if --name "$(Build.BuildNumber)" --location "${{ parameters.deploymentLocation }}" --template-file ./main.bicep --parameters deploymentEnvironment="${{ parameters.deploymentEnvironment }}"
           workingDirectory: "$(system.defaultWorkingDirectory)/bicep"
 
   - deployment: bicep_deploy
@@ -58,5 +58,5 @@ jobs:
                 scriptType: 'bash'
                 scriptLocation: 'inlineScript'
                 inlineScript: |
-                  az deployment sub create --name '$(Build.BuildNumber)' --location ${{ parameters.deploymentLocation }} --template-file ./main.bicep --parameters deploymentEnvironment=${{ parameters.deploymentEnvironment }}
+                  az deployment sub create --name "$(Build.BuildNumber)" --location "${{ parameters.deploymentLocation }}" --template-file ./main.bicep --parameters deploymentEnvironment="${{ parameters.deploymentEnvironment }}"
                 workingDirectory: "$(system.defaultWorkingDirectory)/bicep"
