@@ -10,7 +10,7 @@
 #          \___)
 #  ~~~~~~~~~~~~~~~~~~~~~~~~
 
-name: Bicep Deployment workflow 1.0.$GITHUB_RUN_NUMBER
+name: Bicep Deployment workflow
 
 on:
   workflow_dispatch:
@@ -47,7 +47,7 @@ jobs:
 
       - name: Preview changes
         run: |
-          az deployment sub what-if --name $GITHUB_RUN_ID --location "${{ inputs.deploymentLocation }}" --template-file ./main.bicep --parameters deploymentEnvironment="${{ inputs.deploymentEnvironment }}"
+          az deployment sub what-if --name 1.0.$GITHUB_RUN_NUMBER --location "${{ inputs.deploymentLocation }}" --template-file ./main.bicep --parameters deploymentEnvironment="${{ inputs.deploymentEnvironment }}"
         working-directory: bicep
 
   bicep_deploy:
@@ -69,5 +69,5 @@ jobs:
 
       - name: Deploy templates
         run: |
-          az deployment sub create --name $GITHUB_RUN_ID --location "${{ inputs.deploymentLocation }}" --template-file ./main.bicep --parameters deploymentEnvironment="${{ inputs.deploymentEnvironment }}"
+          az deployment sub create --name 1.0.$GITHUB_RUN_NUMBER --location "${{ inputs.deploymentLocation }}" --template-file ./main.bicep --parameters deploymentEnvironment="${{ inputs.deploymentEnvironment }}"
         working-directory: bicep
