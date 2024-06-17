@@ -58,6 +58,6 @@ jobs:
                 scriptType: 'bash'
                 scriptLocation: 'inlineScript'
                 inlineScript: |
-                  az deployment sub validate --name $(Build.BuildId) --location $(deploymentLocation) --template-file ./main.bicep --parameters deploymentEnvironment=$(deploymentEnvironment)
+                  az deployment sub validate --name "$(Build.BuildId)" --location "$(deploymentLocation)" --template-file ./main.bicep --parameters deploymentEnvironment="$(deploymentEnvironment)"
                 failOnStandardError: true
                 workingDirectory: '$(system.defaultWorkingDirectory)/bicep'
