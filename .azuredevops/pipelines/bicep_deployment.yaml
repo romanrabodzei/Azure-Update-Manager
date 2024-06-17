@@ -43,7 +43,7 @@ stages:
               scriptType: "bash"
               scriptLocation: "inlineScript"
               inlineScript: |
-                az deployment sub what-if --name "ado_pipeline_1.0.0$(Rev:.r)" --location "${{ parameters.deploymentLocation }}" --template-file ./main.bicep --parameters deploymentEnvironment="${{ parameters.deploymentEnvironment }}"
+                az deployment sub what-if --name "ado_pipeline_1.0.$(Rev:.r)" --location "${{ parameters.deploymentLocation }}" --template-file ./main.bicep --parameters deploymentEnvironment="${{ parameters.deploymentEnvironment }}"
               workingDirectory: "$(system.defaultWorkingDirectory)/bicep"
 
   - stage: bicep_deploy
@@ -65,5 +65,5 @@ stages:
                     scriptType: "bash"
                     scriptLocation: "inlineScript"
                     inlineScript: |
-                      az deployment sub create --name "ado_pipeline_1.0.0$(Rev:.r)" --location "${{ parameters.deploymentLocation }}" --template-file ./main.bicep --parameters deploymentEnvironment="${{ parameters.deploymentEnvironment }}"
+                      az deployment sub create --name "ado_pipeline_1.0.$(Rev:.r)" --location "${{ parameters.deploymentLocation }}" --template-file ./main.bicep --parameters deploymentEnvironment="${{ parameters.deploymentEnvironment }}"
                     workingDirectory: "$(system.defaultWorkingDirectory)/bicep"
