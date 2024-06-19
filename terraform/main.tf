@@ -138,7 +138,6 @@ variable "policyAssignmentName" {
   type        = string
   description = "The name of the policy assignment."
   default     = ""
-  
 }
 
 variable "tagKey" {
