@@ -4,13 +4,14 @@
 
 .NOTES
     Author     : Roman Rabodzei
-    Version    : 1.0.240616
+    Version    : 1.0.240619
 */
 
 targetScope = 'subscription'
 
 param deploymentEnvironment string
 param policyInitiativeName string
+param policyAssignmentName string
 param userAssignedIdentitiesId string
 param maintenanceConfigurationResourceId string
 
@@ -124,7 +125,7 @@ resource aum_initiative_def_01 'Microsoft.Authorization/policySetDefinitions@202
 
 /// assignment
 resource aum_initiative_asgn_01 'Microsoft.Authorization/policyAssignments@2024-04-01' = {
-  name: toLower('${deploymentEnvironment}-aum-initiative-asgn-01')
+  name: toLower(policyAssignmentName)
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {

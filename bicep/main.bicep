@@ -4,7 +4,7 @@
 
 .NOTES
     Author     : Roman Rabodzei
-    Version    : 1.0.240615
+    Version    : 1.0.240619
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -20,7 +20,7 @@ targetScope = 'subscription'
 @description('The location where the resources will be deployed.')
 param deploymentLocation string = deployment().location
 @description('The environment where the resources will be deployed.')
-param deploymentEnvironment string
+param deploymentEnvironment string = 'poc'
 @description('The UTC date and time when the deployment is executed.')
 param deploymentDate string = utcNow('yyyyMMddHHmm')
 
@@ -30,10 +30,12 @@ param azureUpdateManagerResourceGroupName string = 'az-${deploymentEnvironment}-
 @description('Name of the Log Analytics workspace.')
 param logAnalyticsWorkspaceName string = 'az-${deploymentEnvironment}-update-manager-law'
 param logAnalyticsWorkspaceRetentionInDays int = 30
+@description('Daily quota for the Log Analytics workspace in GB. -1 means that there is no cap on the data ingestion.')
 param logAnalyticsWorkspaceDailyQuotaGb int = -1
 
 @description('Name of the automation account.')
 param automationAccountName string = 'az-${deploymentEnvironment}-update-manager-aa'
+@description('URI of the runbooks location. The repository URl where the runbooks are stored.')
 param automationAccountRunbooksLocationUri string = 'https://raw.githubusercontent.com/romanrabodzei/azure-update-manager/main'
 
 @description('Name of the user-assigned managed identity.')
@@ -46,7 +48,7 @@ param maintenanceConfigName string = 'az-${deploymentEnvironment}-update-manager
 param maintenanceConfigAssignmentName string = 'az-${deploymentEnvironment}-update-manager-mca'
 
 @description('Custom start date for maintenance window. If not provided, current start date will be used. Format: yyyy-MM-dd')
-param customStartDate string = ''
+param maintenanceStartDate string = ''
 param currentStartDate string = utcNow('yyyy-MM-dd 00:00')
 
 @description('Due to limitations of the Bicep language, the error "StartDateTime should be after 15 minutes of creation" may occur. The following code is used to calculate the next day. If the date is 28, the next day will be 01 next month. February has only 28 days, and 28 was taken just because of it.')
@@ -64,12 +66,13 @@ func calculateStartDate(currentStartDate string) object => {
 func newStartDate(currentStartDate string) string =>
   '${calculateStartDate(currentStartDate).year}-${calculateStartDate(currentStartDate).month}-${calculateStartDate(currentStartDate).day} 00:00'
 
-var maintenanceStartTime = customStartDate == '' ? newStartDate(currentStartDate) : '${customStartDate} 00:00'
+var maintenanceStartTime = maintenanceStartDate == '' ? newStartDate(currentStartDate) : '${maintenanceStartDate} 00:00'
 
 @description('Custom start day for maintenance window. If not provided, Thursday is used.')
 param maintenanceStartDay string = 'Thursday'
 @description('The name of the policy initiative.')
 param policyInitiativeName string = 'az-${deploymentEnvironment}-update-manager-initiative'
+param policyAssignmentName string = 'az-${deploymentEnvironment}-update-manager-assignment'
 
 /// tags
 param tagKey string = 'environment'
@@ -166,6 +169,7 @@ module policies_module './policies/initiatives/initiativeDefinition.bicep' = {
   params: {
     deploymentEnvironment: deploymentEnvironment
     policyInitiativeName: policyInitiativeName
+    policyAssignmentName: policyAssignmentName
     userAssignedIdentitiesId: managedIdentity_module.outputs.userAssignedIdentityId
     maintenanceConfigurationResourceId: maintenanceConfiguration_module.outputs.maintenanceConfigurationId
     tagKey: tagKey
