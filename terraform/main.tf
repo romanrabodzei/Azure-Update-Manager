@@ -4,7 +4,7 @@
 
 .NOTES
     Author     : Roman Rabodzei
-    Version    : 1.0.240613
+    Version    : 1.0.240619
 */
 
 terraform {
@@ -43,7 +43,7 @@ locals {
   maintenanceConfigName                = var.maintenanceConfigName == "" ? "az-${var.deploymentEnvironment}-update-manager-mc" : var.maintenanceConfigName
   maintenanceConfigAssignmentName      = var.maintenanceConfigAssignmentName == "" ? "az-${var.deploymentEnvironment}-update-manager-mca" : var.maintenanceConfigAssignmentName
   currentStartDate                     = formatdate("YYYY-MM-DD 00:00", timeadd(timestamp(), "24h"))
-  maintenanceStartTime                 = var.customStartDate == "" ? local.currentStartDate : "${var.customStartDate} 00:00"
+  maintenanceStartTime                 = var.maintenanceStartDate == "" ? local.currentStartDate : "${var.maintenanceStartDate} 00:00"
   policyInitiativeName                 = var.policyInitiativeName == "" ? "az-${var.deploymentEnvironment}-update-manager-initiative" : var.policyInitiativeName
   tagValue                             = var.tagValue == "" ? var.deploymentEnvironment : var.tagValue
   tags                                 = { "${var.tagKey}" : local.tagValue }
@@ -58,7 +58,7 @@ variable "deploymentLocation" {
 variable "deploymentEnvironment" {
   type        = string
   description = "The environment where the resources will be deployed."
-  default     = "tfpoc"
+  default     = "poc"
 }
 
 variable "azureUpdateManagerResourceGroupName" {
@@ -81,7 +81,7 @@ variable "logAnalyticsWorkspaceRetentionInDays" {
 
 variable "logAnalyticsWorkspaceDailyQuotaGb" {
   type        = number
-  description = "The daily quota for the Log Analytics workspace."
+  description = "The daily quota for the Log Analytics workspace. -1 means that there is no cap on the data ingestion."
   default     = -1
 }
 
@@ -115,7 +115,7 @@ variable "maintenanceConfigAssignmentName" {
   default     = ""
 }
 
-variable "customStartDate" {
+variable "maintenanceStartDate" {
   type        = string
   description = "The custom start date for the maintenance configuration assignment."
   default     = "2024-06-15"
