@@ -6,7 +6,7 @@
 
 .NOTES
     Author     : Roman Rabodzei
-    Version    : 1.0.240613
+    Version    : 1.0.240619
 */
 
 /// locals
@@ -37,6 +37,11 @@ variable "deploymentLocation" {
 variable "policyInitiativeName" {
   type        = string
   description = "The name of the policy initiative."
+}
+
+variable "policyAssignmentName" {
+  type        = string
+  description = "The name of the policy assignment."
 }
 
 variable "userAssignedIdentitiesId" {
@@ -145,7 +150,7 @@ PARAMETERS
 }
 
 resource "azurerm_subscription_policy_assignment" "this_resource" {
-  name            = "${var.deploymentEnvironment}-aum-initiative-asgn-01"
+  name            = var.policyAssignmentName
   display_name    = "${upper(var.deploymentEnvironment)}. Azure Update Management Initiative Assignment"
   description     = "Azure Update Management Initiative Assignment"
   subscription_id = data.azurerm_subscription.current.id

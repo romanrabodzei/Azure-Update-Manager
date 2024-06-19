@@ -45,6 +45,7 @@ locals {
   currentStartDate                     = formatdate("YYYY-MM-DD 00:00", timeadd(timestamp(), "24h"))
   maintenanceStartTime                 = var.maintenanceStartDate == "" ? local.currentStartDate : "${var.maintenanceStartDate} 00:00"
   policyInitiativeName                 = var.policyInitiativeName == "" ? "az-${var.deploymentEnvironment}-update-manager-initiative" : var.policyInitiativeName
+  policyAssignmentName                 = var.policyAssignmentName == "" ? "az-${var.deploymentEnvironment}-update-manager-policy-assignment" : var.policyAssignmentName
   tagValue                             = var.tagValue == "" ? var.deploymentEnvironment : var.tagValue
   tags                                 = { "${var.tagKey}" : local.tagValue }
 }
@@ -133,6 +134,13 @@ variable "policyInitiativeName" {
   default     = ""
 }
 
+variable "policyAssignmentName" {
+  type        = string
+  description = "The name of the policy assignment."
+  default     = ""
+  
+}
+
 variable "tagKey" {
   type    = string
   default = "environment"
@@ -210,6 +218,7 @@ module "policies_module" {
   deploymentEnvironment              = var.deploymentEnvironment
   deploymentLocation                 = var.deploymentLocation
   policyInitiativeName               = local.policyInitiativeName
+  policyAssignmentName               = local.policyAssignmentName
   userAssignedIdentitiesId           = module.managedIdentity_module.userAssignedIdentityId
   maintenanceConfigurationResourceId = module.maintenanceConfiguration_module.maintenanceConfigurationId
   tagKey                             = var.tagKey
