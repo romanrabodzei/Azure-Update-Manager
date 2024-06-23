@@ -1,9 +1,9 @@
 # .Synopsis
-#     Terraform deployment pipeline
+#     Terraform deployment workflow
 #
 # .NOTES
 #     Author     : Roman Rabodzei
-#     Version    : 1.0.240617
+#     Version    : 1.0.240623
 #
 #             _
 #         .__(.)<  (MEOW)
@@ -24,7 +24,7 @@ on:
         description: "Deployment environment"
         type: environment
         required: true
-        default: "poc"
+        default: "demo"
 
 permissions:
   id-token: write
