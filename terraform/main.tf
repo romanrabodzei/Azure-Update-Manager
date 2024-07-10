@@ -1,33 +1,11 @@
 /*
 .Synopsis
-    Main Bicep template for Azure Update Manager components.
+    Main Terraform template for Azure Update Manager components.
 
 .NOTES
     Author     : Roman Rabodzei
     Version    : 1.0.240619
 */
-
-terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "3.107.0"
-    }
-  } /*
-  backend "remote" {
-    organization = ""
-
-    workspaces {
-      name = ""
-    }
-  }*/
-}
-
-provider "azurerm" {
-  features {}
-}
-
-data "azurerm_subscription" "current" {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////// Locals and variables ///////////////////////////////////////////
