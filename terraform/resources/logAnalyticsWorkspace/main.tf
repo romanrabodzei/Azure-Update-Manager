@@ -1,6 +1,6 @@
 /*
 .Synopsis
-    Bicep template for Log Analytics Workspace, Automation account.
+    Terraform template for Log Analytics Workspace, Automation account.
     Template:
       - https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/log_analytics_workspace
       - https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/automation_account

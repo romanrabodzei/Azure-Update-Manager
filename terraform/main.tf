@@ -1,6 +1,6 @@
 /*
 .Synopsis
-    Main Bicep template for Azure Update Manager components.
+    Main Terraform template for Azure Update Manager components.
 
 .NOTES
     Author     : Roman Rabodzei

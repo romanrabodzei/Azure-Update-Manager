@@ -1,6 +1,6 @@
 /*
 .Synopsis
-    Bicep template for Log Analytics Workspace, Automation account.
+    Terraform template for Azure Policy Definition.
     Template:
       - https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/policy_definition
 

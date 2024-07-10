@@ -1,6 +1,6 @@
 /*
 .Synopsis
-    Bicep template for Log Analytics Workspace, Automation account.
+    Terraform template for Azure Update Manager Maintenance Configuration Assignment.
     Template:
       - https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/maintenance_configuration
 
