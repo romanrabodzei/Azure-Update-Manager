@@ -1,6 +1,6 @@
 ## Deployment variables
 
-The following table describes the variable used in the deployment. The `Default value` column shows the default value used when the variable is not provided.
+The following table describes the variable used in the deployment. The `Default value` column shows the default value used when the variable is not provided. 
 
 | Parameter name                       | Description                  | Default value                                         |
 | ------------------------------------ | ---------------------------- | ----------------------------------------------------- |
