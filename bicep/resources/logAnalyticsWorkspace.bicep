@@ -7,7 +7,7 @@
 
 .NOTES
     Author     : Roman Rabodzei
-    Version    : 1.0.240616
+    Version    : 1.0.241017
 */
 
 /// deploymentScope
@@ -101,9 +101,9 @@ resource automationAccount_resource 'Microsoft.Automation/automationAccounts@202
     }
     publicNetworkAccess: automationAccountPublicNetworkAccess
   }
-  resource runbook 'runbooks@2023-11-01' = {
+  resource runbook 'runbooks' = {
     name: 'policyRemedationTasksRunbook'
-    location: location
+    location: location == 'eastus' ? 'eastus2' : location == 'eastus2' ? 'eastus' : location
     tags: tags
     properties: {
       description: 'Runbook to create policy remediation tasks'
